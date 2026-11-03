@@ -5,6 +5,7 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { envFront } from 'src/services/envfile';
+import { LOGO_ODONTOPRINT_BASE64 } from 'src/assets/logo-base64';
 
 (pdfMake as any).vfs = pdfFonts;
 
@@ -85,15 +86,7 @@ export class ReciboPagamentoDialogComponent {
         reader.readAsDataURL(blob);
       });
 
-    let logoBase64 = '';
-    try {
-      const logoUrl = `${envFront.BASE_URL}/assets/img/odontoprint-1-color.png`;
-      const response = await fetch(logoUrl);
-      const blob = await response.blob();
-      logoBase64 = await blobToDataUrl(blob);
-    } catch {
-      // Continua sem logo se falhar o carregamento
-    }
+    let logoBase64 = LOGO_ODONTOPRINT_BASE64;
 
     let assinaturaBase64 = '';
     try {

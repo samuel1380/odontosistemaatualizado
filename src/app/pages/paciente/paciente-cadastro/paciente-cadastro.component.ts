@@ -17,6 +17,7 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { envFront } from 'src/services/envfile';
+import { LOGO_ODONTOPRINT_BASE64 } from 'src/assets/logo-base64';
 
 (pdfMake as any).vfs = pdfFonts;
 
@@ -499,21 +500,8 @@ export class PacienteCadastroComponent implements OnInit, OnChanges {
       // Obter observação
       const observacao = trabalho.get('observacao')?.value || '';
 
-      // Carregar logo como base64
-      let logoBase64 = '';
-      try {
-        const logoUrl = `${envFront.BASE_URL}/assets/img/odontoprint-1-color.png`;
-        const response = await fetch(logoUrl);
-        const blob = await response.blob();
-        logoBase64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      } catch (error) {
-        console.warn('Erro ao carregar logo, continuando sem logo:', error);
-      }
+      // Carregar logo como base64 (embutida diretamente para evitar erros de CORS/rede)
+      let logoBase64 = LOGO_ODONTOPRINT_BASE64;
 
       // Gerar QR code com o ID do trabalho
       let qrCodeBase64 = '';
