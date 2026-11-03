@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>Configurar Valor por KM</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="configuracaoForm">
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Valor por KM (R$)</mat-label>
+          <input matInput type="number" formControlName="valorPorKm" step="0.01" min="0.01">
+          <mat-error *ngIf="configuracaoForm.get('valorPorKm')?.hasError('required')">
+            Valor por KM é obrigatório
+          </mat-error>
+          <mat-error *ngIf="configuracaoForm.get('valorPorKm')?.hasError('min')">
+            Valor deve ser maior que zero
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="dialogRef.close()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+</mat-dialog-actions>
+

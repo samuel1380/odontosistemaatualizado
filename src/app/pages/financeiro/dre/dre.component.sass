@@ -1,0 +1,80 @@
+.dre-filtros
+  margin-bottom: 1.5rem
+
+.dre-tabela
+  width: 100%
+  overflow-x: auto
+
+  table
+    table-layout: fixed
+    width: 100%
+
+  th, td
+    padding: 0.5rem 0.75rem
+    text-align: right
+    overflow: hidden
+    text-overflow: ellipsis
+
+  th:first-child, td:first-child
+    text-align: left
+    width: 300px
+    min-width: 300px
+    max-width: 300px
+    white-space: normal
+    word-wrap: break-word
+
+  .linha-total
+    font-weight: bold
+    border-top: 1px solid rgba(0, 0, 0, 0.12)
+
+  .linha-secao
+    font-weight: bold
+    background: rgba(0, 0, 0, 0.04)
+
+  .nivel-1
+    padding-left: 1.5rem
+
+  .dre-celula-categoria
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+  .dre-acordeon-slot
+    flex: 0 0 40px
+    width: 40px
+    height: 40px
+
+  .dre-btn-acordeon
+    flex: 0 0 auto
+    width: 40px
+    height: 40px
+    padding: 0
+
+  .dre-linha-filho td:first-child
+    padding-left: 2.75rem
+
+  .valor-receita
+    color: #2e7d32
+
+  .valor-despesa
+    color: #c62828
+
+  tr.valor-resultado
+    background: rgba(0, 0, 0, 0.07)
+
+  .valor-resultado
+    font-weight: bold
+
+.component-dark-theme .dre-tabela tr.valor-resultado
+  background: rgba(255, 255, 255, 0.08)
+
+.regime-radio
+  margin-right: 1rem
+
+.meses-info
+  margin-top: 0.5rem
+  font-size: 0.875rem
+  color: rgba(0, 0, 0, 0.6)
+
+.component-dark-theme .meses-info
+  color: rgba(255, 255, 255, 0.7)

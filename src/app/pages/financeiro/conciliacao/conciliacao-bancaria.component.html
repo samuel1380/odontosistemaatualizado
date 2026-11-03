@@ -1,0 +1,238 @@
+<mat-card class="mb-25 tagus-card"
+  [class.component-dark-theme]="themeService.isDark()"
+  [class.card-borderd-theme]="themeService.isCardBorder()"
+  [class.card-border-radius]="themeService.isCardBorderRadius()">
+  <mat-card-header>
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <h5 class="mb-0">Conciliação Bancária</h5>
+      <button mat-raised-button color="primary" (click)="abrirDialogImportar()">
+        <mat-icon>upload</mat-icon>
+        Importar OFX
+      </button>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <!-- Filtros -->
+    <form [formGroup]="filtrosForm" class="mb-3">
+      <div class="row">
+        <div class="col-md-3">
+          <mat-form-field class="w-100">
+            <mat-label>Conta</mat-label>
+            <mat-select formControlName="idConta">
+              <mat-option [value]="null">Todas</mat-option>
+              <mat-option *ngFor="let conta of contas$ | async" [value]="conta.idConta">
+                {{ conta.nome }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2">
+          <mat-form-field class="w-100">
+            <mat-label>Data Início</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="dataInicio">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2">
+          <mat-form-field class="w-100">
+            <mat-label>Data Fim</mat-label>
+            <input matInput [matDatepicker]="pickerFim" formControlName="dataFim">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerFim"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFim></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2">
+          <mat-form-field class="w-100">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="tipo">
+              <mat-option [value]="null">Todos</mat-option>
+              <mat-option value="CREDITO">Crédito</mat-option>
+              <mat-option value="DEBITO">Débito</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button mat-raised-button color="primary" (click)="carregarDados()" class="w-100">
+            <mat-icon>search</mat-icon>
+            Filtrar
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Layout lado a lado -->
+    <div class="row">
+      <!-- Coluna Esquerda: Transações OFX -->
+      <div class="col-md-6">
+        <mat-card class="mb-3">
+          <mat-card-header>
+            <h6 class="mb-0">Transações OFX Não Conciliadas</h6>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <div *ngIf="!carregando && transacoesDataSource.data.length === 0" class="text-center p-4">
+              <p>Nenhuma transação não conciliada encontrada.</p>
+            </div>
+
+            <div *ngIf="!carregando && transacoesDataSource.data.length > 0" class="table-responsive">
+              <table mat-table [dataSource]="transacoesDataSource" class="w-100">
+                <ng-container matColumnDef="dataTransacao">
+                  <th mat-header-cell *matHeaderCellDef>Data</th>
+                  <td mat-cell *matCellDef="let transacao">{{ formatarData(transacao.dataTransacao) }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let transacao">
+                    <span [class.text-success]="transacao.tipo === 'CREDITO'" 
+                          [class.text-danger]="transacao.tipo === 'DEBITO'">
+                      {{ transacao.tipo === 'CREDITO' ? 'Crédito' : 'Débito' }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef>Valor</th>
+                  <td mat-cell *matCellDef="let transacao">{{ formatarValor(transacao.valor) }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="descricao">
+                  <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                  <td mat-cell *matCellDef="let transacao">{{ transacao.descricao || '-' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="acoes">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let transacao">
+                    <button mat-icon-button 
+                            color="primary" 
+                            (click)="selecionarTransacao(transacao)"
+                            [class.selected]="transacaoSelecionada?.idTransacaoOfx === transacao.idTransacaoOfx">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                    <button mat-icon-button 
+                            color="warn" 
+                            (click)="ignorarTransacao(transacao)">
+                      <mat-icon>block</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsTransacoes"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsTransacoes"
+                    [class.selected-row]="transacaoSelecionada?.idTransacaoOfx === row.idTransacaoOfx"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Sugestões -->
+        <mat-card *ngIf="transacaoSelecionada && sugestoes.length > 0" class="mb-3">
+          <mat-card-header>
+            <h6 class="mb-0">Sugestões Automáticas</h6>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="carregandoSugestoes" class="d-flex justify-content-center p-2">
+              <mat-spinner diameter="30"></mat-spinner>
+            </div>
+            <div *ngIf="!carregandoSugestoes" class="list-group">
+              <button *ngFor="let sugestao of sugestoes" 
+                      type="button" 
+                      class="list-group-item list-group-item-action"
+                      (click)="selecionarMovimentacao(sugestao)">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>{{ formatarValor(sugestao.valor) }}</strong>
+                    <br>
+                    <small>{{ formatarData(sugestao.dataMovimentacao) }} - {{ sugestao.descricao }}</small>
+                  </div>
+                  <div>
+                    <span class="badge bg-primary">Score: {{ sugestao.score.toFixed(0) }}%</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Coluna Direita: Movimentações Disponíveis -->
+      <div class="col-md-6">
+        <mat-card>
+          <mat-card-header>
+            <h6 class="mb-0">Movimentações Disponíveis</h6>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <div *ngIf="!carregando && movimentacoesDataSource.data.length === 0" class="text-center p-4">
+              <p>Nenhuma movimentação disponível encontrada.</p>
+            </div>
+
+            <div *ngIf="!carregando && movimentacoesDataSource.data.length > 0" class="table-responsive">
+              <table mat-table [dataSource]="movimentacoesDataSource" class="w-100">
+                <ng-container matColumnDef="dataMovimentacao">
+                  <th mat-header-cell *matHeaderCellDef>Data</th>
+                  <td mat-cell *matCellDef="let movimentacao">{{ formatarData(movimentacao.dataMovimentacao) }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let movimentacao">
+                    <span [class.text-success]="movimentacao.tipo === 'CREDITO'" 
+                          [class.text-danger]="movimentacao.tipo === 'DEBITO'">
+                      {{ movimentacao.tipo === 'CREDITO' ? 'Crédito' : 'Débito' }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef>Valor</th>
+                  <td mat-cell *matCellDef="let movimentacao">{{ formatarValor(movimentacao.valor) }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="descricao">
+                  <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                  <td mat-cell *matCellDef="let movimentacao">{{ movimentacao.descricao }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="acoes">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let movimentacao">
+                    <button mat-icon-button 
+                            color="primary" 
+                            (click)="selecionarMovimentacao(movimentacao)"
+                            [class.selected]="movimentacaoSelecionada?.idMovimentacao === movimentacao.idMovimentacao">
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsMovimentacoes"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsMovimentacoes"
+                    [class.selected-row]="movimentacaoSelecionada?.idMovimentacao === row.idMovimentacao"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Botão de Vincular -->
+        <div class="mt-3 text-center" *ngIf="transacaoSelecionada && movimentacaoSelecionada">
+          <button mat-raised-button 
+                  color="primary" 
+                  size="large"
+                  (click)="vincular()">
+            <mat-icon>link</mat-icon>
+            Vincular Conciliação
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

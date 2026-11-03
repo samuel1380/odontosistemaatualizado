@@ -1,0 +1,93 @@
+<div class="mb-25 tagus-card">
+  <mat-card>
+    <mat-card-header>
+      <h5 class="mb-0">Associações de Tabelas de Preço por Empresa</h5>
+      <div class="d-flex align-items-center gap-2 mt-3">
+        <mat-form-field appearance="outline" style="width: 300px;">
+          <mat-label>Filtrar por Empresa</mat-label>
+          <mat-select [formControl]="empresaFiltroControl" (selectionChange)="aplicarFiltro()">
+            <mat-option [value]="null">Todas as empresas</mat-option>
+            <mat-option *ngFor="let empresa of empresas" [value]="empresa.idEmpresa">
+              {{ empresa.nomeFantasia || empresa.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="abrirCadastro()">
+          <mat-icon>add</mat-icon>
+          Nova Associação
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="mat-elevation-z8 tagus-mat-table">
+        <table mat-table [dataSource]="associacoesFiltradas">
+          <!-- Coluna Empresa -->
+          <ng-container matColumnDef="empresaNome">
+            <th mat-header-cell *matHeaderCellDef>Empresa</th>
+            <td mat-cell *matCellDef="let associacao">{{ associacao.empresaNome }}</td>
+          </ng-container>
+
+          <!-- Coluna Tabela de Preço -->
+          <ng-container matColumnDef="tabelaNome">
+            <th mat-header-cell *matHeaderCellDef>Tabela de Preço</th>
+            <td mat-cell *matCellDef="let associacao">
+              {{ associacao.tabelaNome }}
+              <span *ngIf="associacao.tabelaPrecoProduto?.numeroVersao" class="versao-badge">
+                (Versão {{ associacao.tabelaPrecoProduto.numeroVersao }})
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Data Início -->
+          <ng-container matColumnDef="dataInicio">
+            <th mat-header-cell *matHeaderCellDef>Data Início</th>
+            <td mat-cell *matCellDef="let associacao">{{ formatarData(associacao.dataInicio) }}</td>
+          </ng-container>
+
+          <!-- Coluna Data Fim -->
+          <ng-container matColumnDef="dataFim">
+            <th mat-header-cell *matHeaderCellDef>Data Fim</th>
+            <td mat-cell *matCellDef="let associacao">
+              {{ associacao.dataFim ? formatarData(associacao.dataFim) : 'Vigente indefinidamente' }}
+            </td>
+          </ng-container>
+
+          <!-- Coluna Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let associacao">
+              <span class="status-badge" [ngClass]="{
+                'status-vigente': calcularStatus(associacao) === 'Vigente',
+                'status-vencendo': calcularStatus(associacao).includes('Vence em') || calcularStatus(associacao) === 'Vence hoje',
+                'status-expirada': calcularStatus(associacao) === 'Expirada',
+                'status-futura': calcularStatus(associacao) === 'Futura'
+              }">
+                {{ calcularStatus(associacao) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Ações -->
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let associacao">
+              <button mat-icon-button color="primary" (click)="abrirEdicao(associacao)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="desativarAssociacao($event, associacao)" matTooltip="Desativar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsKeys"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsKeys"></tr>
+        </table>
+
+        <div *ngIf="associacoesFiltradas.data.length === 0" class="text-center p-4">
+          <p>Nenhuma associação encontrada.</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

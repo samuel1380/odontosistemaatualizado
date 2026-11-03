@@ -1,0 +1,230 @@
+<h2 mat-dialog-title class="d-flex align-items-center">
+  <span>Detalhes da Fatura #{{ fatura.idFatura }}</span>
+  <button mat-icon-button color="accent" (click)="abrirDetalhamentoImpressao()" title="Detalhamento para Impressão">
+    <mat-icon>print</mat-icon>
+  </button>
+  <button mat-icon-button color="primary" (click)="abrirReciboPagamento()" [disabled]="valorPagoNumero <= 0" title="Imprimir recibo de pagamento">
+    <mat-icon>receipt</mat-icon>
+  </button>
+  <button mat-icon-button (click)="recalcularFatura()" [disabled]="fatura.status === 'PAGA'" [matTooltip]="fatura.status === 'PAGA' ? 'Fatura paga não pode ser recalculada' : 'Recalcular Fatura'"><mat-icon>refresh</mat-icon></button>
+  <button mat-icon-button color="primary" (click)="abrirModalDesconto()" title="Aplicar Desconto">
+    <mat-icon>percent</mat-icon>
+  </button>
+  <button mat-icon-button color="primary" (click)="abrirModalDevolucaoComponentes()" title="Desconto por Devolução de Componentes">
+    <mat-icon>assignment_return</mat-icon>
+  </button>
+</h2>
+<mat-dialog-content>
+  <div class="fatura-cabecalho-empresa" *ngIf="fatura.empresa">
+    <div class="empresa-nome">
+      {{ nomeFantasia }}
+      <button mat-icon-button class="small-icon-button" color="primary" (click)="copiarNomeClinica()" *ngIf="nomeFantasia" matTooltip="Copiar nome da clínica">
+        <mat-icon fontIcon="content_copy"></mat-icon>
+      </button>
+      <span *ngIf="boletosAtrasadosCount > 0" class="badge bg-danger cursor-pointer ml-2" style="font-size: 0.8rem; cursor: pointer;" (click)="abrirPendencias()">
+        <mat-icon style="vertical-align: middle; font-size: 14px; height: 14px; width: 14px;">warning</mat-icon>
+        Cliente em Atraso ({{boletosAtrasadosCount}})
+      </span>
+    </div>
+    <div class="empresa-cnpj" *ngIf="cnpjEmpresa">
+      {{ cnpjEmpresa }}
+      <button mat-icon-button class="small-icon-button" color="primary" (click)="copiarDocumentoClinica()" matTooltip="Copiar documento/CNPJ">
+        <mat-icon fontIcon="content_copy"></mat-icon>
+      </button>
+    </div>
+    <div class="empresa-contato" *ngIf="telefoneEmpresa || contatoRestanteEmpresa">
+      Contato:
+      <a *ngIf="whatsappLink" [href]="whatsappLink" target="_blank" rel="noopener noreferrer" class="whatsapp-link" title="Abrir no WhatsApp">{{ telefoneEmpresa }}</a>
+      <span *ngIf="!whatsappLink && telefoneEmpresa">{{ telefoneEmpresa }}</span>
+      <span *ngIf="contatoRestanteEmpresa">{{ telefoneEmpresa ? ' | ' : '' }}{{ contatoRestanteEmpresa }}</span>
+    </div>
+    <div class="empresa-contato-financeiro" *ngIf="temContatoFinanceiro">
+      Contato Financeiro:
+      <span *ngIf="contatoFinanceiroNome">{{ contatoFinanceiroNome }}</span>
+      <a *ngIf="whatsappLinkFinanceiro" [href]="whatsappLinkFinanceiro" target="_blank" rel="noopener noreferrer" class="whatsapp-link" title="Abrir no WhatsApp">{{ contatoFinanceiroTelefone }}</a>
+      <span *ngIf="!whatsappLinkFinanceiro && contatoFinanceiroTelefone">{{ contatoFinanceiroTelefone }}</span>
+      <span *ngIf="contatoFinanceiroEmail">{{ (contatoFinanceiroNome || contatoFinanceiroTelefone) ? ' | ' : '' }}{{ contatoFinanceiroEmail }}</span>
+    </div>
+  </div>
+
+  <!-- Informações de Pagamento da Empresa Selecionada -->
+  <div class="row mt-3">
+    <div class="col-md-4">
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Dia de Pagamento Padrão</mat-label>
+        <input matInput type="number" [formControl]="diaPagamentoControl" placeholder="Ex: 5" min="1" max="31">
+      </mat-form-field>
+    </div>
+    <div class="col-md-4">
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Meio de Pagamento Padrão</mat-label>
+        <mat-select [formControl]="tipoPagamentoControl">
+          <mat-option [value]="null">Não definido</mat-option>
+          <mat-option value="BOLETO">Boleto</mat-option>
+          <mat-option value="PIX">Pix</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4" *ngIf="tipoPagamentoControl.value === 'BOLETO'">
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Quantidade de Parcelas</mat-label>
+        <input matInput type="number" [formControl]="quantidadeParcelasControl" placeholder="Ex: 3" min="1" max="12">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Campo de Anotações -->
+  <div class="anotacoes-container" style="margin-bottom: 20px;">
+    <mat-form-field appearance="outline" style="width: 100%;">
+      <mat-label>Anotações da Fatura</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="fatura.anotacoes"
+        placeholder="Adicione anotações sobre esta fatura para lembretes nas interações com os dentistas..."
+        rows="3"
+        (blur)="salvarAnotacoes()"
+        style="resize: vertical; min-height: 80px;"></textarea>
+      <mat-hint>As anotações são salvas automaticamente quando você sai do campo</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <form [formGroup]="formDevolucao">
+    <div *ngIf="fatura.ordensDeServico && fatura.ordensDeServico.length > 0; else noTrabalhos" formArrayName="ordensDeServico">
+      <h5>
+        Trabalhos Incluídos
+        <span class="valor-total-fatura">
+          {{ fatura.valorTotal | currency:'BRL' }}
+          <button mat-icon-button class="small-icon-button" color="primary" (click)="copiarValorTrabalhos()" matTooltip="Copiar valor dos trabalhos">
+            <mat-icon fontIcon="content_copy"></mat-icon>
+          </button>
+        </span>
+      </h5>
+      <mat-accordion multi>
+        <mat-expansion-panel *ngFor="let os of fatura.ordensDeServico; let osIndex = index" class="ordem-servico-container" [formGroupName]="osIndex">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="title_detalhe_fatura">
+              <p><strong>Trabalho #{{ os.idTrabalho }}</strong> - Paciente: {{ os.trabalho.nomePaciente }}
+                <strong *ngIf="os.trabalho.retrabalho" class="retrabalho-badge red"> - Retrabalho</strong>
+                <span class="status-badge" [ngClass]="{
+                  'status-pendente': os.trabalho.status === 'PENDENTE',
+                  'status-enviado': os.trabalho.status === 'ENVIADO' || os.trabalho.status === 'ENVIADO_PROVA',
+                  'status-pago': os.trabalho.status === 'PAGAMENTO_RECEBIDO',
+                  'status-outro': !['PENDENTE', 'ENVIADO', 'ENVIADO_PROVA', 'PAGAMENTO_RECEBIDO'].includes(os.trabalho.status)
+                }">
+                  {{ os.trabalho.status }}
+                </span> |
+                <span class="valor-total-trabalho">{{ os.valorTotal | currency:'BRL' }}</span>
+              </p>
+            </mat-panel-title>
+            <mat-panel-description class="open-trabalho-justify-end">
+              <button mat-icon-button color="accent" (click)="trocarFaturaOrdemServico(os); $event.stopPropagation()" title="Trocar Fatura">
+                <mat-icon>swap_horiz</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="abrirTrabalho(os.trabalho.idPaciente, $event); $event.stopPropagation()" title="Abrir trabalho em nova aba">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <table mat-table [dataSource]="os.itens" formArrayName="itens" class="mat-elevation-z2 itens-table">
+            <!-- Colunas da Tabela -->
+            <!-- Coluna de Pagar removida - agora usa lançamento direto na listagem -->
+            <!-- <ng-container matColumnDef="pagar">
+              <th mat-header-cell *matHeaderCellDef> Pagar </th>
+              <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+                <mat-checkbox formControlName="pagar"></mat-checkbox>
+              </td>
+            </ng-container> -->
+
+            <ng-container matColumnDef="selecionar">
+              <th mat-header-cell *matHeaderCellDef> Devolver </th>
+              <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+                <mat-checkbox formControlName="selecionado" *ngIf="item.tipoCobranca === 'componente'"></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="descricao">
+              <th mat-header-cell *matHeaderCellDef> Descrição </th>
+              <td mat-cell *matCellDef="let item"> {{ item.descricao }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="situacao">
+              <th mat-header-cell *matHeaderCellDef> Situação </th>
+              <td mat-cell *matCellDef="let item">
+                <span *ngIf="rotuloSituacaoItem(item) !== '—'" class="badge-situacao-devolucao">{{ rotuloSituacaoItem(item) }}</span>
+                <ng-container *ngIf="rotuloSituacaoItem(item) === '—'">—</ng-container>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef> Qtd. </th>
+              <td mat-cell *matCellDef="let item"> {{ item.quantidade }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="valor">
+              <th mat-header-cell *matHeaderCellDef> Valor Total</th>
+              <td mat-cell *matCellDef="let item">
+                <ng-container *ngIf="getValorItem(item) as valorCalculado">
+                  <span *ngIf="valorCalculado.totalmenteDevolvido" class="valor-zerado">
+                    {{ item.valor | currency:'BRL' }}
+                  </span>
+                  <span *ngIf="!valorCalculado.totalmenteDevolvido">
+                    {{ valorCalculado.valorRestante | currency:'BRL' }}
+                  </span>
+                </ng-container>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantidadeDevolver">
+              <th mat-header-cell *matHeaderCellDef> Qtd. a Devolver </th>
+              <td mat-cell *matCellDef="let item; let i = index" [formGroupName]="i">
+                <mat-form-field class="qtd-devolver-field" *ngIf="item.tipoCobranca === 'componente'">
+                  <input matInput type="number" formControlName="quantidadeDevolver" [max]="quantidadeRestanteParaDevolucao(item)" min="0">
+                </mat-form-field>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['selecionar', 'descricao', 'situacao', 'valor', 'quantidade', 'quantidadeDevolver']"></tr>
+            <tr mat-row [class.item-pago]="row.status === 'PAGO'" [class.retrabalho-servico-row]="os.trabalho.retrabalho"
+                [class.linha-devolucao-clicavel]="row.tipoCobranca === 'componente'"
+                [class.linha-devolucao-pendente]="itemComponenteEmDevolucao(row)"
+                (click)="onLinhaItemDevolucaoClick(osIndex, row, $event)"
+                *matRowDef="let row; columns: ['selecionar', 'descricao', 'situacao', 'valor', 'quantidade', 'quantidadeDevolver'];"></tr>
+          </table>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <ng-template #noTrabalhos>
+      <p>Não há trabalhos associados a esta fatura.</p>
+    </ng-template>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <!-- Botão de Realizar Baixa removido - agora usa lançamento direto na listagem -->
+  <!-- <button mat-stroked-button color="accent" (click)="realizarBaixaPagamento()"
+          [disabled]="!isPagamentoSelecionado()">
+    Realizar Baixa
+  </button> -->
+
+  <button mat-stroked-button color="warn" (click)="abrirModalDevolucao()"
+          [disabled]="!isDevolucaoSelecionada()">
+    Solicitar Devolução
+  </button>
+
+  <button mat-stroked-button color="accent" (click)="abrirModalDividir()" [disabled]="fatura.status !== 'ABERTA'">
+    Dividir Fatura
+  </button>
+
+  <span matTooltip="Não é possível fechar a fatura, pois há devoluções pendentes.">
+    <button mat-stroked-button color="primary" (click)="confirmarFechamentoFatura()" [disabled]="fatura.status !== 'ABERTA'">
+      Fechar Fatura
+    </button>
+  </span>
+
+  <button mat-stroked-button color="warn" (click)="reabrirFatura()" *ngIf="podeReabrirFatura()"
+          matTooltip="Reabrir fatura e estornar os lançamentos no financeiro">
+    Reabrir Fatura
+  </button>
+
+  <button mat-button (click)="fecharDialog()">Voltar</button>
+</mat-dialog-actions>

@@ -1,0 +1,54 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                  <mat-card class="mb-25 tagus-card">
+                    <mat-card-header>
+                        <h5 class="mb-0">Cadastro de Produto</h5>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <form>
+                        <mat-form-field class="w50 p5">
+                          <mat-label>Nome</mat-label>
+                          <input type="text" matInput [formControl]="nomeProdutoControl" [errorStateMatcher]="matcher">
+                          <mat-error *ngIf="nomeProdutoControl.hasError('nomePacienteFormControl') && !nomeProdutoControl.hasError('required')">
+                            Por favor preencha o nome do produto
+                          </mat-error>
+                          <mat-error *ngIf="nomeProdutoControl.hasError('required')">
+                            Nome do produto é <strong>requerido</strong>
+                          </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="w50 p5">
+                          <mat-label>Categoria</mat-label>
+                          <mat-select matNativeControl [formControl]="categoriaProdutoFormControl">
+                            <mat-option *ngFor="let categoria of categoriaList" [value]="categoria.idCategoriaProduto" >{{categoria.nome}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="w100 p5">
+                          <mat-label>Preço</mat-label>
+                          <span matTextPrefix>R$&nbsp;</span>
+                          <input type="number" matInput [formControl]="precoControl" [errorStateMatcher]="matcher">
+                          <mat-error *ngIf="precoControl.hasError('nomePacienteFormControl') && !precoControl.hasError('required')">
+                            Por favor preencha o preço
+                          </mat-error>
+                          <mat-error *ngIf="precoControl.hasError('required')">
+                            Preço é <strong>requerido</strong>
+                          </mat-error>
+                        </mat-form-field>
+                      </form>
+                    </mat-card-content>
+                    <button mat-flat-button class="tagus fw-semibold" color="warn"  [routerLink]="'/l/produto'">Cancelar</button>
+                    <button mat-flat-button class="tagus fw-semibold" (click)="onSubmitButton($event)">Salvar</button>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+<div class="listagem">
+  <mat-card class="mb-25 tagus-card filaEspera" >
+    <mat-card-header>
+      <h5 *ngIf="tituloLista" class="mb-0">{{tituloLista}}</h5>
+      <a *ngIf="habilitarbotaoCriar" mat-flat-button class="default-btn tagus" (click)="onclickCriarInterno()">
+          <i class="ri-add-fill"></i> Add
+      </a>
+    </mat-card-header>
+    <mat-card-content>
+        <div *ngIf="lista.data.length != 0" class="mat-elevation-z8 tagus-mat-table">
+            <table mat-table [dataSource]="lista">
+
+              <ng-container *ngFor="let coluna of columns" [matColumnDef]="coluna.coluna">
+                <th mat-header-cell *matHeaderCellDef class="text-start">{{coluna.titulo}}</th>
+                <td mat-cell *matCellDef="let element" class="fw-semibold text-start">
+                  <span *ngIf="!coluna.price && !coluna.date && !coluna.datetime && !coluna.whatsapp">
+                    {{element[coluna.coluna]}}
+                  </span>
+                  <span *ngIf="coluna.price">
+                    {{element[coluna.coluna] | currency : coluna.price}}
+                  </span>
+                  <span *ngIf="coluna.date">
+                    {{element[coluna.coluna] | date: 'dd/MM/yyyy' }}
+                  </span>
+                  <span *ngIf="coluna.datetime">
+                    {{element[coluna.coluna] | date: 'dd/MM/yyyy HH:mm' }}
+                  </span>
+                  <ng-container *ngIf="coluna.whatsapp">
+                    <span>{{element[coluna.coluna]}}</span>
+                    <a
+                      *ngIf="element[coluna.whatsappLinkField || 'linkWhatsApp']"
+                      [href]="element[coluna.whatsappLinkField || 'linkWhatsApp']"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      (click)="$event.preventDefault(); $event.stopPropagation(); abrirWhatsApp(element, coluna)"
+                      class="btn-whatsapp-listagem"
+                      matTooltip="WhatsApp do financeiro"
+                      title="WhatsApp do financeiro">
+                      <i class="flaticon flaticon-whatsapp" aria-hidden="true"></i>
+                    </a>
+                  </ng-container>
+                </td>
+
+
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr
+                class="linhaLista"
+                mat-row *matRowDef="let row; columns: displayedColumns;"
+                (click)="onclickListagem(row)"
+                [ngClass]="rowClassFunction ? rowClassFunction(row) : {}">
+              </tr>
+            </table>
+            <!-- <mat-paginator
+                [pageSizeOptions]="[5, 10, 20]"
+                showFirstLastButtons
+            >
+            </mat-paginator> -->
+        </div>
+
+        <div *ngIf="lista.data.length == 0">
+          <h3>Sem itens na lista</h3>
+        </div>
+    </mat-card-content>
+  </mat-card>
+
+
+
+</div>

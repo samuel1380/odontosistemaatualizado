@@ -1,0 +1,50 @@
+<mat-card class="mb-25 tagus-card">
+  <mat-card-header>
+      <h5 class="mb-0">Filtros</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-4">
+        <app-single-selection
+            [formControl]="empresaFilter"
+            [lista$]="empresas$"
+            nomeIdentificador="idEmpresa"
+            titulo="Empresa"
+            placeholder="Pesquisar empresa...">
+        </app-single-selection>
+      </div>
+      <div class="col-md-4">
+        <app-single-selection
+            [formControl]="dentistaFilter"
+            [lista$]="dentistas$"
+            nomeIdentificador="idDentista"
+            titulo="Dentista"
+            placeholder="Pesquisar dentista...">
+        </app-single-selection>
+      </div>
+      <div class="col-md-4">
+        <app-single-selection
+            [formControl]="pacienteFilter"
+            [lista$]="pacientes$"
+            nomeIdentificador="idPaciente"
+            titulo="Paciente"
+            placeholder="Pesquisar paciente...">
+        </app-single-selection>
+      </div>
+    </div>
+    <div class="row" *ngIf="showNotFound">
+        <div class="col-md-12">
+            <p>Paciente não encontrado.</p>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-12 text-end">
+            <button mat-raised-button color="primary" (click)="cadastrarPaciente()" [disabled]="!pacienteNaoEncontrado">
+                Cadastrar Paciente
+            </button>
+        </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<app-listagem *ngIf="listaPacientes.data.length > 0" [lista]="listaPacientes" (onEditClick)="abrirDetalhesCadastro($event)" [columns]="displayedColumns" />

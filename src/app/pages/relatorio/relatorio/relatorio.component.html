@@ -1,0 +1,172 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+              <div class="row justify-content-center">
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                  <mat-card class="single-stats-box tagus-card mb-25">
+                    <div class="d-flex justify-content-space-between align-items-center">
+                        <div class="title">
+                            <h3>{{totalFaturados || '-'}}</h3>
+                            <span class="d-block gray-color">Trabalhos Faturados</span>
+                        </div>
+                        <div class="icon">
+                            <i class="flaticon-donut-chart"></i>
+                        </div>
+                    </div>
+                  </mat-card>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                  <mat-card class="single-stats-box tagus-card mb-25">
+                    <div class="d-flex justify-content-space-between align-items-center">
+                        <div class="title">
+                            <h3>{{totalRetrabalhos || '-'}}</h3>
+                            <span class="d-block gray-color">Retrabalhos</span>
+                        </div>
+                        <div class="icon">
+                            <i class="flaticon-donut-chart"></i>
+                        </div>
+                    </div>
+                  </mat-card>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6">
+                  <mat-card class="single-stats-box tagus-card mb-25">
+                    <div class="d-flex justify-content-space-between align-items-center">
+                        <div class="title">
+                            <h3>{{totalBonificados || '-'}}</h3>
+                            <span class="d-block gray-color">Bonificações</span>
+                        </div>
+                        <div class="icon">
+                            <i class="flaticon-donut-chart"></i>
+                        </div>
+                    </div>
+                  </mat-card>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                  <mat-card class="single-stats-box tagus-card mb-25">
+                    <div class="d-flex justify-content-space-between align-items-center">
+                        <div class="title">
+                            <h3>{{valorTotalServicos ? (valorTotalServicos | currency : 'BRL') : '-'}}</h3>
+                            <span class="d-block gray-color">Valor Total Faturado</span>
+                        </div>
+                        <div class="icon">
+                            <i class="flaticon-donut-chart"></i>
+                        </div>
+                    </div>
+                  </mat-card>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                  <mat-card class="single-stats-box tagus-card mb-25">
+                    <div class="d-flex justify-content-space-between align-items-center">
+                        <div class="title">
+                            <h3>{{(totalFaturados ? (valorTotalServicos / totalFaturados) : 0) | currency : 'BRL'}}</h3>
+                            <span class="d-block gray-color">Ticket Médio</span>
+                        </div>
+                        <div class="icon">
+                            <i class="flaticon-donut-chart"></i>
+                        </div>
+                    </div>
+                  </mat-card>
+                </div>
+              </div>
+
+            <mat-card class="mb-25 tagus-card">
+              <mat-card-header>
+                  <h5 class="mb-0">Relatório de Trabalhos</h5>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-md-3">
+                    <app-single-selection
+                      [formControl]="empresaNomeControl"
+                      [lista$]="empresas$"
+                      nomeIdentificador="idEmpresa"
+                      titulo="Empresa"
+                      placeholder="Pesquisar empresa...">
+                    </app-single-selection>
+                  </div>
+
+                  <div class="col-md-2">
+                    <mat-form-field class="w-100">
+                      <mat-label>Status Trabalho</mat-label>
+                      <mat-select [formControl]="statusTrabalhoControl" multiple>
+                        @for (topping of statusTrabalhoList; track topping) {
+                          <mat-option [value]="topping">{{topping}}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-2">
+                    <mat-form-field class="w-100">
+                      <mat-label>Tipo Relatório</mat-label>
+                      <mat-select matNativeControl [formControl]="tipoRelatorioControl">
+                        <mat-option value="componente">Componente</mat-option>
+                        <mat-option value="servico">Serviço</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-3">
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>Data do Filtro</mat-label>
+                      <mat-date-range-input [formGroup]="rangeDateProcessoSeletivo" [rangePicker]="picker">
+                          <input matStartDate formControlName="dataInicio" placeholder="Data Inicio">
+                          <input matEndDate formControlName="dataFim" placeholder="Data Fim">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #picker></mat-date-range-picker>
+                      <mat-error *ngIf="rangeDateProcessoSeletivo.controls.dataInicio.hasError('matStartDateInvalid')">Data de inicio inválida</mat-error>
+                      <mat-error *ngIf="rangeDateProcessoSeletivo.controls.dataFim.hasError('matEndDateInvalid')">Data de fim inválida</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-2 d-flex align-items-center">
+                    <button mat-flat-button (click)="buscar()" class="tagus w-100">Buscar</button>
+                  </div>
+                </div>
+              </mat-card-content>
+          </mat-card>
+
+          <div class="w-full flex justify-end">
+            <button mat-fab color="primary" (click)="imprimir()">
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
+          <app-listagem
+            *ngIf="listaTrabalhoExibicao.data.length > 0"
+            [lista]="listaTrabalhoExibicao"
+            [columns]="tipoRelatorioControl.value === 'componente' ? displayedColumnsComponentes : displayedColumnsServico"
+            tituloLista="Trabalhos Faturados" />
+
+          <app-listagem
+            *ngIf="listaRetrabalhosExibicao.data.length > 0"
+            [lista]="listaRetrabalhosExibicao"
+            [columns]="tipoRelatorioControl.value === 'componente' ? displayedColumnsComponentes : displayedColumnsServico"
+            tituloLista="Retrabalhos" />
+
+          <app-listagem
+            *ngIf="listaBonificadosExibicao.data.length > 0"
+            [lista]="listaBonificadosExibicao"
+            [columns]="tipoRelatorioControl.value === 'componente' ? displayedColumnsComponentes : displayedColumnsServico"
+            tituloLista="Bonificações" />
+
+          <app-listagem
+            *ngIf="listaBaixasExibicao.data.length > 0"
+            [lista]="listaBaixasExibicao"
+            [columns]="displayedColumnsBaixas"
+            tituloLista="Histórico de Devoluções" />
+
+          <div *ngIf="listaTrabalhoExibicao.data.length === 0 && listaRetrabalhosExibicao.data.length === 0 && listaBonificadosExibicao.data.length === 0 && listaBaixasExibicao.data.length === 0" class="text-center p-25 tagus-card mb-25">
+            <h5 class="mb-0">Nenhum trabalho encontrado para os filtros selecionados.</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

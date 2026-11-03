@@ -1,0 +1,69 @@
+.alert-expirada
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  padding: 0.75rem 1rem
+  background-color: #fff3cd
+  border: 1px solid #ffc107
+  border-left: 4px solid #dc3545
+  border-radius: 4px
+  color: #856404
+  font-weight: 500
+
+  mat-icon
+    color: #dc3545
+
+.versoes-container
+  display: flex
+  flex-wrap: wrap
+  gap: 0.5rem
+
+.versao-card
+  min-width: 200px
+  max-width: 300px
+  cursor: pointer
+  transition: all 0.3s ease
+  border: 1px solid #e0e0e0
+
+  &:hover
+    background-color: #f5f5f5
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+    transform: translateY(-2px)
+
+.versao-content
+  gap: 0.5rem
+
+.versao-data
+  font-size: inherit
+  font-weight: normal
+
+.versao-separator
+  color: #ccc
+  margin: 0 0.25rem
+
+.versao-status,
+.tabela-status
+  color: #000000
+  font-weight: bold
+  font-size: 0.875rem
+
+  &.status-vigente
+    color: #28a745
+
+  &.status-vencendo
+    color: #ff9800
+
+  &.status-expirada
+    color: #dc3545
+
+  &.status-futura
+    color: #0056b3
+
+.gap-2
+  gap: 0.5rem
+
+::ng-deep .mat-expansion-panel-header
+  .mat-panel-description
+    justify-content: flex-end
+    margin-right: 0
+

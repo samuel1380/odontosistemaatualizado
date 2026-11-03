@@ -1,0 +1,9 @@
+<div *ngIf="tabelaPrecoProduto">
+  <div class="d-flex justify-content-end mb-3">
+    <button mat-flat-button class="tagus fw-semibold" color="primary" (click)="imprimirTabelaPreco()">
+      <mat-icon>print</mat-icon>
+      Imprimir
+    </button>
+  </div>
+  <app-tabela-preco-produto-cadastro [tabelaPrecoProduto]="tabelaPrecoProduto" (onSave)="onSave($event)"></app-tabela-preco-produto-cadastro>
+</div>

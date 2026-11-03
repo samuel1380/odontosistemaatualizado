@@ -1,0 +1,271 @@
+<div
+    class="h-100vh pt-50 pb-50"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                <div class="title">
+                    <div class="d-flex mb-10 align-items-center">
+                      <img src="assets/img/odontoprint.png" alt="logo-icon">
+                    </div>
+                    <p>Já possui conta? <a routerLink="/" class="main-color fw-medium">Entrar agora!</a></p>
+                </div>
+                  <mat-card class="mb-25 tagus-card">
+                    <mat-card-header>
+                        <h5 class="mb-0">Cadastrar</h5>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form>
+                          <div class="row">
+                              <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="tagus-form-group without-icon">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Tipo de empresa</label>
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Tipo de empresa</mat-label>
+                                        <mat-select (ngModelChange)="onChangeTipoEmpresa()" [formControl]="tipoEmpresaFormControl">
+                                            <mat-option value="cirurgiao_dentista">Cirurgião Dentista</mat-option>
+                                            <mat-option value="clinica_odontologica">Clínica Odontológica</mat-option>
+                                            <mat-option value="laboratorio_protese_dentaria">Laboratório de prótese dentária</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+
+                            <div *ngIf="isEmpresa" class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">CNPJ <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o CNPJ da empresa</mat-label>
+                                        <input type="text" maxlength="14" minlength="14" matInput [formControl]="cnpjFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+
+                            <div *ngIf="isEmpresa" class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Razão Social <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite a razão social</mat-label>
+                                        <input type="text" matInput [formControl]="razaoSocialFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div *ngIf="isEmpresa" class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Nome fantasia <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o nome fantasia</mat-label>
+                                        <input type="text" matInput [formControl]="nomeFantasiaFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div *ngIf="isPessoa" class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">CPF <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o CPF</mat-label>
+                                        <input type="text" matInput [formControl]="cpfFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div *ngIf="isPessoa" class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Nome <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o nome</mat-label>
+                                        <input type="text" matInput [formControl]="nomeFantasiaFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Responsável Técnico <span>*</span></label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o nome do responsável</mat-label>
+                                        <input matInput [formControl]="responsavelTecnicoFormControl">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="tagus-form-group">
+                                    <label class="d-block mb-12 fw-semibold gray-color">Número CRO</label>
+                                    <mat-form-field appearance="fill">
+                                        <i class="ri-user-3-line"></i>
+                                        <mat-label>Digite o número do CRO</mat-label>
+                                        <input matInput [formControl]="numeroDocumentoResponsavel">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <br />
+                            <mat-divider></mat-divider>
+                            <br />
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">CEP</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o número do CEP</mat-label>
+                                      <input matInput type="number" [formControl]="cepFormControl" (keyup)=onChangeBuscaCEP()>
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Logradouro</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o logradouro</mat-label>
+                                      <input matInput [formControl]="logradouroFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Complemento</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o complemento</mat-label>
+                                      <input matInput [formControl]="complementoFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Bairro</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o bairro</mat-label>
+                                      <input matInput [formControl]="bairroFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Cidade</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite a cidade</mat-label>
+                                      <input matInput [formControl]="cidadeFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">UF</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o UF</mat-label>
+                                      <input matInput [formControl]="ufFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <br />
+                            <mat-divider></mat-divider>
+                            <br />
+
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Contato Operacional</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o nome</mat-label>
+                                      <input matInput [formControl]="contatoOperacionalFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Telefone Operacional</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o telefone</mat-label>
+                                      <input matInput [formControl]="telefoneOperacionalFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Email Operacional</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o email</mat-label>
+                                      <input matInput [formControl]="emailOperacionalFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <br />
+                            <mat-divider></mat-divider>
+                            <br />
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Contato Financeiro</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o nome</mat-label>
+                                      <input matInput [formControl]="contatoFinanceiroFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Telefone Financeiro</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o telefone</mat-label>
+                                      <input matInput [formControl]="telefoneFinanceiroFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <div class="tagus-form-group">
+                                  <label class="d-block mb-12 fw-semibold gray-color">Email Financeiro</label>
+                                  <mat-form-field appearance="fill">
+                                      <i class="ri-user-3-line"></i>
+                                      <mat-label>Digite o email</mat-label>
+                                      <input matInput [formControl]="emailFinanceiroFormControl">
+                                  </mat-form-field>
+                              </div>
+                            </div>
+
+                          </div>
+                        </form>
+                    </mat-card-content>
+                    <button mat-flat-button class="tagus d-block fw-semibold" (click)="onSubmitButton($event)">Registrar</button>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

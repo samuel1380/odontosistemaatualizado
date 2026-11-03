@@ -1,0 +1,17 @@
+<mat-form-field class="w100" appearance="fill">
+  <mat-label>{{titulo}}</mat-label>
+  <input type="text"
+         [placeholder]="placeholder"
+         matInput
+         [formControl]="itemCtrl"
+         [matAutocomplete]="auto"
+         (blur)="handleBlur()">
+  <button *ngIf="itemCtrl.value" matSuffix mat-icon-button aria-label="Limpar" (click)="clearSelection()">
+    <mat-icon>close</mat-icon>
+  </button>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" [displayWith]="displayFn.bind(this)">
+    <mat-option *ngFor="let item of filteredItems | async" [value]="item">
+      {{item[renderName]}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

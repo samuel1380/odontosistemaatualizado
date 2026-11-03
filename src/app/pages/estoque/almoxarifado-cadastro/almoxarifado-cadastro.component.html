@@ -1,0 +1,24 @@
+<mat-card class="mb-25 tagus-card">
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xl-6 col-xxl-6 h-250px">
+      <mat-card-content>
+        <app-listagem tituloLista="Estoque" [lista]="listaEstoques" [columns]="displayedColumns" [habilitarbotaoCriar]="true" (onclickCriar)="inserirEstoque(this.idAlmoxarifado)" />
+      </mat-card-content>
+    </div>
+
+
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xl-6 col-xxl-6 h-250px">
+      <mat-card-content>
+        <app-listagem tituloLista="Débitos de Componentes" [lista]="listaDebitos" [columns]="displayedColumnsDebitos" />
+      </mat-card-content>
+    </div>
+
+  </div>
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12 col-xxl-12 h-250px">
+      <mat-card-content>
+        <app-listagem tituloLista="Histórico de uso de componentes" [lista]="listaHistorico" [columns]="displayedColumnsHistorico" />
+      </mat-card-content>
+    </div>
+
+</mat-card>

@@ -1,0 +1,186 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+      <div class="d-table-cell">
+        <div class="tagus-form ms-auto me-auto">
+          <mat-card class="mb-25 tagus-card">
+            <mat-card-header>
+                <h5 class="mb-0">Editar Lançamento</h5>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="lancamentoForm">
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Descrição</mat-label>
+                      <input matInput formControlName="descricao" placeholder="Ex: Pagamento de fatura" readonly>
+                      <mat-error *ngIf="lancamentoForm.get('descricao')?.hasError('required')">
+                        Descrição é obrigatória.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Tipo</mat-label>
+                      <mat-select formControlName="tipo" [disabled]="true">
+                        <mat-option *ngFor="let tipo of tiposLancamento" [value]="tipo.id">
+                          {{tipo.nome}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Categoria</mat-label>
+                      <mat-select formControlName="idCategoria">
+                        <mat-option *ngFor="let categoria of categoriasFiltradas" [value]="categoria.idCategoria">
+                          {{categoria.nome}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6" *ngIf="lancamentoForm.get('tipo')?.value === 'DESPESA'">
+                    <mat-form-field class="w100">
+                      <mat-label>Fornecedor (opcional)</mat-label>
+                      <mat-select formControlName="idFornecedor">
+                        <mat-option [value]="null">Nenhum</mat-option>
+                        <mat-option *ngFor="let f of listaFornecedores" [value]="f.idFornecedor">
+                          {{ f.nomeFantasia || f.razaoSocial }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6" *ngIf="lancamentoForm.get('tipo')?.value === 'RECEITA'">
+                    <mat-form-field class="w100">
+                      <mat-label>Cliente (opcional)</mat-label>
+                      <mat-select formControlName="idClienteFornecedor">
+                        <mat-option [value]="null">Nenhum</mat-option>
+                        <mat-option *ngFor="let c of listaClientes" [value]="c.idEmpresa">
+                          {{ c.nomeFantasia || c.nome }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Valor Total</mat-label>
+                      <span matTextPrefix>R$&nbsp;</span>
+                      <input type="number" matInput formControlName="valorTotal" placeholder="0,00" readonly>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Número do documento</mat-label>
+                      <input matInput formControlName="numeroDocumento" placeholder="Ex: NF 12345, boleto 67890" readonly>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Data de Competência</mat-label>
+                      <input matInput [matDatepicker]="pickerCompetencia" formControlName="dataCompetencia" readonly>
+                      <mat-datepicker-toggle matIconSuffix [for]="pickerCompetencia"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerCompetencia></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Data de Emissão</mat-label>
+                      <input matInput [matDatepicker]="pickerEmissao" formControlName="dataEmissao" readonly>
+                      <mat-datepicker-toggle matIconSuffix [for]="pickerEmissao"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerEmissao></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="false && parcelasExistentes.length > 0">
+                  <div class="col-md-12">
+                    <h6>Parcelas Existentes</h6>
+                    <table class="w-100">
+                      <thead>
+                        <tr>
+                          <th>Nº</th>
+                          <th>Valor</th>
+                          <th>Vencimento</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let parcela of parcelasExistentes">
+                          <td>{{parcela.numeroParcela}}</td>
+                          <td>{{parcela.valor | currency: 'BRL'}}</td>
+                          <td>{{parcela.dataVencimento | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{parcela.status}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="false">
+                  <div class="col-md-12">
+                    <h6>Adicionar Novas Parcelas</h6>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="false">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Número de Parcelas Adicionais</mat-label>
+                      <input type="number" matInput formControlName="numeroParcelasAdicionais" min="0">
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="false && (lancamentoForm.get('numeroParcelasAdicionais')?.value ?? 0) > 0">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Meio de Pagamento</mat-label>
+                      <mat-select formControlName="meioPagamento">
+                        <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+                          {{meio.nome}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Data do 1º Vencimento</mat-label>
+                      <input matInput [matDatepicker]="pickerVencimento" formControlName="dataPrimeiroVencimento">
+                      <mat-datepicker-toggle matIconSuffix [for]="pickerVencimento"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerVencimento></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="false && (lancamentoForm.get('numeroParcelasAdicionais')?.value ?? 0) > 0">
+                  <div class="col-md-12">
+                    <mat-checkbox formControlName="gerarJuros">
+                      Gerar juros e multa em caso de atraso
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+              </form>
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <button mat-button (click)="dialogRef.close()">Cancelar</button>
+              <button mat-raised-button color="primary" [disabled]="!lancamentoForm.valid" (click)="salvar()">Salvar</button>
+            </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
+

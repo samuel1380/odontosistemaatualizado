@@ -1,0 +1,46 @@
+<div
+    class="h-100vh pt-50 pb-50"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                <div class="title">
+                    <div class="d-flex mb-10 align-items-center">
+                        <img src="assets/img/odontoprint.png" alt="logo-icon">
+                    </div>
+                    <p>Não possui uma conta? <a routerLink="/cadastrar" class="main-color fw-medium">Registre agora!</a></p>
+                </div>
+                <form>
+                    <div class="bg-white border-radius pt-20 ps-20 pe-20">
+                        <div class="tagus-form-group without-icon">
+                            <label class="d-block mb-12 fw-semibold gray-color">Email <span>*</span></label>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Digite seu email</mat-label>
+                                <input matInput [formControl]="emailFormControl">
+                            </mat-form-field>
+                        </div>
+                        <div class="tagus-form-group without-icon">
+                            <label class="d-block mb-12 fw-semibold gray-color">Senha <span>*</span></label>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Digite sua senha</mat-label>
+                                <input matInput [type]="hide ? 'password' : 'text'" [formControl]="senhaFormControl">
+                                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <!-- <div class="d-flex info align-items-center justify-content-space-between">
+                        <mat-checkbox class="gray-color">Remember me</mat-checkbox>
+                        <a routerLink="/authentication/forgot-password" class="d-inline-block main-color fw-medium">Forgot your password?</a>
+                    </div> -->
+                    <button mat-flat-button class="tagus d-block fw-semibold" (click)="onSubmitButton()">Entrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

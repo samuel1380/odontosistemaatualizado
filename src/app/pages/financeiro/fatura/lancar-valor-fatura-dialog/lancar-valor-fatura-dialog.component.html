@@ -1,0 +1,118 @@
+<mat-card>
+  <mat-card-header>
+    <h5 class="mb-0">Lançar Valor da Fatura #{{ fatura.idFatura }}</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="lancarForm">
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Valor Total da Fatura</mat-label>
+            <input matInput [value]="getValorTotalFormatado()" disabled>
+          </mat-form-field>
+        </div>
+        <div class="col-md-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Valor Pago</mat-label>
+            <input matInput [value]="getValorPagoFormatado()" disabled>
+          </mat-form-field>
+        </div>
+        <div class="col-md-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Valor Restante</mat-label>
+            <input matInput [value]="getValorRestanteFormatado()" disabled>
+          </mat-form-field>
+        </div>
+        <div class="col-md-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Valor a Lançar *</mat-label>
+            <span matTextPrefix>R$&nbsp;</span>
+            <input matInput type="number" formControlName="valorTotal" min="0.01" step="0.01">
+            <mat-error *ngIf="lancarForm.get('valorTotal')?.hasError('required')">
+              Valor é obrigatório
+            </mat-error>
+            <mat-error *ngIf="lancarForm.get('valorTotal')?.hasError('min')">
+              Valor mínimo é R$ 0,01
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Seção de Parcelas -->
+        <div class="col-md-12 mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0" style="font-size: 14px; font-weight: 600;">Parcelas</h6>
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 12px; color: #64748b;">{{ parcelasEditaveis.length }} parcela(s)</span>
+              <button mat-icon-button type="button" color="warn" (click)="removerUltimaParcela()" [disabled]="parcelasEditaveis.length <= 1" matTooltip="Remover última parcela">
+                <mat-icon>remove_circle_outline</mat-icon>
+              </button>
+              <button mat-icon-button type="button" color="primary" (click)="adicionarParcela()" matTooltip="Adicionar parcela">
+                <mat-icon>add_circle_outline</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Indicador de diferença -->
+          <div *ngIf="parcelasEditaveis.length > 0 && !parcelasValidas" class="mb-2 p-2 rounded" style="background: #fef2f2; border: 1px solid #fecaca; font-size: 12px; color: #dc2626;">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom;">warning</mat-icon>
+            Diferença: {{ diferencaTotal | currency:'BRL' }} — ajuste os valores das parcelas.
+          </div>
+          <div *ngIf="parcelasEditaveis.length > 0 && parcelasValidas" class="mb-2 p-2 rounded" style="background: #f0fdf4; border: 1px solid #bbf7d0; font-size: 12px; color: #166534;">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom;">check_circle</mat-icon>
+            Soma das parcelas correta: {{ totalParcelasEditaveis | currency:'BRL' }}
+          </div>
+
+          <!-- Linha de cada parcela -->
+          <div *ngFor="let parcela of parcelasEditaveis; let i = index" class="row mb-2 align-items-center p-2 rounded" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div class="col-auto" style="min-width: 60px;">
+              <span class="badge" style="background: #3b82f6; color: white; font-size: 12px; font-weight: 600;">{{ (i + 1) + '/' + parcelasEditaveis.length }}</span>
+            </div>
+            <div class="col">
+              <mat-form-field class="w-100" appearance="outline" style="margin-bottom: -1.25em;">
+                <mat-label>Valor (R$)</mat-label>
+                <input type="number" matInput [(ngModel)]="parcela.valor" [ngModelOptions]="{standalone: true}" min="0" step="0.01">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field class="w-100" appearance="outline" style="margin-bottom: -1.25em;">
+                <mat-label>Vencimento</mat-label>
+                <input matInput type="date" [(ngModel)]="parcela.dataVencimentoStr" [ngModelOptions]="{standalone: true}" (change)="i === 0 ? onDataPrimeiraParcelaChange() : null">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Conta *</mat-label>
+            <mat-select formControlName="idConta">
+              <mat-option *ngFor="let conta of listaContas" [value]="conta.idConta">
+                {{ conta.nome }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="lancarForm.get('idConta')?.hasError('required')">
+              Conta é obrigatória
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Meio de Pagamento</mat-label>
+            <mat-select formControlName="meioPagamento">
+              <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+                {{ meio.nome }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-card-actions class="d-flex justify-content-end gap-2">
+    <button mat-stroked-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="salvar()" [disabled]="lancarForm.invalid">
+      Lançar
+    </button>
+  </mat-card-actions>
+</mat-card>
+

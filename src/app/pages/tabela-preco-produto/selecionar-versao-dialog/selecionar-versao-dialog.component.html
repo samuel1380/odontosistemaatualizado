@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>{{ data.tabelaMatriz.nome }}</h1>
+<div mat-dialog-content>
+    <p class="mb-3">Selecione a versão que deseja editar:</p>
+    
+    <div class="list-group mb-3">
+        <button 
+            type="button" 
+            class="list-group-item list-group-item-action"
+            (click)="selecionarMatriz()">
+            <div class="d-flex justify-content-between align-items-center">
+                <div><strong>Tabela Matriz</strong></div>
+                <mat-icon>chevron_right</mat-icon>
+            </div>
+        </button>
+    </div>
+
+    <div *ngIf="data.versoes.length === 0" class="text-center p-4">
+        <p>Nenhuma versão encontrada.</p>
+    </div>
+
+    <div *ngIf="data.versoes.length > 0">
+        <h6 class="mb-2">Versões:</h6>
+        <div class="list-group">
+            <button 
+                *ngFor="let versao of data.versoes" 
+                type="button" 
+                class="list-group-item list-group-item-action"
+                (click)="selecionarVersao(versao)">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><strong>Versão {{ versao.numeroVersao || 'N/A' }}</strong></div>
+                    <mat-icon>chevron_right</mat-icon>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="criarNovaVersao()">
+        <mat-icon>add</mat-icon>
+        Nova Versão
+    </button>
+</div>

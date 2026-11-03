@@ -1,0 +1,241 @@
+<div
+    class="sidebar-area bg-white box-shadow"
+    [ngClass]="{'active': isToggled}"
+    [class.dark-sidebar]="themeService.isSidebarDark()"
+    [class.right-sidebar]="themeService.isRightSidebar()"
+    [class.hide-sidebar]="themeService.isHideSidebar()"
+>
+    <div class="logo bg-white">
+        <a routerLink="/" class="d-flex align-items-center">
+            <img src="assets/img/icone-odontoprint-50x50.png" alt="logo">
+            <span>Odontoprint</span>
+        </a>
+    </div>
+    <div class="burger-menu" (click)="toggle()" [ngClass]="{'active': isToggled}">
+        <span class="top-bar"></span>
+        <span class="middle-bar"></span>
+        <span class="bottom-bar"></span>
+    </div>
+    <ng-scrollbar visibility="hover" style="height: 100vh;">
+        <div class="sidebar-inner">
+            <div class="sidebar-menu">
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin', 'producao', 'vendas', 'financeiro'])">
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              <i class="flaticon-to-do-list"></i>
+                              <span class="title">Trabalho</span>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ul class="sidebar-sub-menu">
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'producao', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/paciente" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Paciente
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'producao', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/trabalho" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Trabalho
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'producao', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/trabalho/concluido" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Concluidos
+                              </a>
+                          </li>
+                      </ul>
+                  </mat-expansion-panel>
+
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin', 'financeiro'])">
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              <i class="flaticon-credit-card"></i>
+                              <span class="title">Financeiro</span>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ul class="sidebar-sub-menu">
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/fluxo-caixa" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Fluxo de Caixa
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/contas-a-pagar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Contas a Pagar
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/contas-a-receber" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Contas a Receber
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/dre" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                DRE
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/faturas" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Faturas
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/faturas-pendentes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Faturas Pendentes
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/boletos-atrasados" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Boletos Atrasados
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/capital" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Aportes e Empréstimos
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/conciliacao" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Conciliação Bancária
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/categorias" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Categorias
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/contas" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Contas
+                              </a>
+                          </li>
+                      </ul>
+                  </mat-expansion-panel>
+
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              <i class="flaticon-truck"></i>
+                              <span class="title">Logística</span>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ul class="sidebar-sub-menu">
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/financeiro/combustivel" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Combustível
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/financeiro/logistica" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Envios
+                              </a>
+                          </li>
+                      </ul>
+                  </mat-expansion-panel>
+
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              <i class="flaticon-box"></i>
+                              <span class="title">Estoque</span>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ul class="sidebar-sub-menu">
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/almoxarifado" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Estoque
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/componentes-pendentes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Componentes Pendentes
+                              </a>
+                          </li>
+                      </ul>
+                  </mat-expansion-panel>
+
+                    <span class="sub-title gray-color" *ngIf="permite(['admin', 'vendas', 'financeiro'])">Configuração</span>
+
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                      <mat-expansion-panel-header>
+                          <mat-panel-title>
+                              <i class="flaticon-settings"></i>
+                              <span class="title">Configurações Gerais</span>
+                          </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ul class="sidebar-sub-menu">
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/empresa" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Empresas
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                              <a routerLink="/l/financeiro/fornecedores" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Fornecedores
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/usuario" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Usuários
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/produto" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Produtos
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/marca" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Marcas
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/componente" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Componentes
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/cor" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Escala de cor
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                              <a routerLink="/l/motivo" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Configuração de Motivos
+                              </a>
+                          </li>
+                          <li class="sidemenu-item" *ngIf="permite(['admin', 'vendas', 'financeiro'])">
+                              <a routerLink="/l/tabelaprecoproduto" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                                Tabela Preço Produto
+                              </a>
+                          </li>
+                      </ul>
+                  </mat-expansion-panel>
+
+
+                  <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = true" *ngIf="permite(['admin'])">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <i class="flaticon-bar-chart"></i>
+                            <span class="title">Relatórios</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <ul class="sidebar-sub-menu">
+                        <li class="sidemenu-item" *ngIf="permite(['admin', 'financeiro'])">
+                            <a routerLink="/l/report/trabalho" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                              Trabalhos
+                            </a>
+                        </li>
+                        <li class="sidemenu-item" *ngIf="permite(['admin'])">
+                            <a routerLink="/l/trabalho/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}" class="sidemenu-link">
+                              Status de Trabalho
+                            </a>
+                        </li>
+                    </ul>
+                  </mat-expansion-panel>
+
+                </mat-accordion>
+            </div>
+        </div>
+    </ng-scrollbar>
+</div>

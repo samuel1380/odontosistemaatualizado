@@ -1,0 +1,91 @@
+<div class="row align-items-center mb-4">
+  <div class="col-sm-6">
+    <div class="page-title mb-0">
+      <div class="d-flex align-items-center gap-2">
+        <div class="icon-title">
+          <i class="flaticon-381-controls-3"></i>
+        </div>
+        <h1 class="mb-0">Ponto de Equilíbrio</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 col-md-5">
+    <div class="card h-100">
+      <div class="card-header border-bottom-0">
+        <h4 class="card-title">Simulador de Precificação</h4>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form">
+          <div class="mb-4">
+            <label class="form-label font-w600">Custos Fixos Totais (R$)</label>
+            <input type="number" class="form-control solid" formControlName="custoFixo" min="0" placeholder="Ex: 5000">
+            <small class="text-muted mt-1 d-block">Despesas que não variam com as vendas (ex: aluguel, salários).</small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label font-w600">Preço de Venda Unitário (R$)</label>
+            <input type="number" class="form-control solid" formControlName="precoVenda" min="0" placeholder="Ex: 100">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label font-w600">Custo Variável Unitário (R$)</label>
+            <input type="number" class="form-control solid" formControlName="custoVariavel" min="0" placeholder="Ex: 50">
+            <small class="text-muted mt-1 d-block">Custos por cada unidade vendida (ex: materiais diretos, taxas, comissões).</small>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-7 mt-4 mt-md-0">
+    <div class="card h-100 bg-primary text-white result-card position-relative overflow-hidden">
+      <!-- Decorative circle -->
+      <div class="circle-decoration position-absolute"></div>
+      
+      <div class="card-header border-bottom-0 position-relative z-index-1">
+        <h4 class="card-title text-white">Resultados da Simulação</h4>
+      </div>
+      <div class="card-body position-relative z-index-1 d-flex flex-column justify-content-center py-5">
+        
+        <div *ngIf="margemInvalida" class="alert alert-danger mb-0" role="alert">
+          <h4 class="alert-heading fw-bold mb-1"><i class="fa fa-exclamation-triangle me-2"></i> Atenção! Margem Inviável</h4>
+          <p class="mb-0">Sua <strong>Margem de Contribuição</strong> é de <strong>{{ margemContribuicao | currency:'BRL':'symbol':'1.2-2' }}</strong>. Como o Custo Variável é maior ou igual ao Preço de Venda, o negócio terá prejuízo em cada unidade vendida. É impossível atingir um ponto de equilíbrio nesse cenário.</p>
+        </div>
+
+        <div *ngIf="!margemInvalida" class="w-100">
+          <div class="row text-center align-items-center g-4">
+            
+            <div class="col-sm-6 mb-4 mb-sm-0">
+              <p class="text-white-50 mb-2 font-w500 text-uppercase letter-spacing-1">Margem de Contribuição Unitária</p>
+              <h2 class="text-white display-5 fw-bold mb-0">
+                {{ margemContribuicao | currency:'BRL':'symbol':'1.2-2' }}
+              </h2>
+            </div>
+            
+            <div class="col-sm-6 border-start border-white-50 border-1 border-opacity-25">
+              <p class="text-white-50 mb-2 font-w500 text-uppercase letter-spacing-1">Quantidade Mínima de Vendas</p>
+              <h2 class="text-white display-3 fw-bolder mb-1 text-shadow-sm">
+                {{ pontoEquilibrioQtd | number:'1.0-0' }} <small class="fs-18 font-weight-normal opacity-75">un.</small>
+              </h2>
+            </div>
+
+            <div class="col-12 mt-5">
+              <div class="bg-white bg-opacity-10 rounded-4 p-4 mx-sm-4 border border-white border-opacity-10 backdrop-blur">
+                <p class="text-white mb-2 font-w500 text-uppercase letter-spacing-1 fs-14">Faturamento Mínimo Necessário (Mês)</p>
+                <h1 class="text-white display-4 fw-black mb-0 text-shadow">
+                  {{ pontoEquilibrioRs | currency:'BRL':'symbol':'1.2-2' }}
+                </h1>
+                <p class="text-white-50 fs-13 mt-2 mb-0">Para cobrir todos os seus custos variáveis e fixos</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

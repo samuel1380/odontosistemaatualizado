@@ -1,0 +1,211 @@
+.dialog-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 16px
+
+.empresa
+  font-size: 1.2rem
+  font-weight: 600
+
+.header-empresa-info
+  .cnpj
+    font-size: 0.9rem
+    color: #666
+    margin-top: 0.25rem
+
+  .contato,
+  .contato-financeiro
+    font-size: 0.9rem
+    margin-top: 0.25rem
+
+  .whatsapp-link
+    color: #25d366
+    text-decoration: none
+
+    &:hover
+      text-decoration: underline
+
+.referencia
+  font-size: 0.9rem
+  color: #666
+  margin-top: 0.25rem
+
+.header-actions
+  display: flex
+  gap: 8px
+
+mat-dialog-content
+  min-width: 800px
+
+.loading-container, .erro-container
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 12px
+  padding: 40px 0
+
+.detalhamento-conteudo section
+  margin-bottom: 24px
+
+h3
+  margin-bottom: 12px
+  font-size: 1.1rem
+
+table
+  width: 100%
+  border-collapse: collapse
+  margin-bottom: 12px
+  font-size: 0.9rem
+
+th, td
+  border: 1px solid #e0e0e0
+  padding: 8px
+  text-align: left
+
+th
+  background: #f5f5f5
+  font-weight: 600
+
+.empty-message
+  color: #777
+  font-style: italic
+
+.secao-aguardando-devolucao
+  margin-top: 8px
+  padding: 12px 14px
+  border-radius: 8px
+  border: 1px solid #90caf9
+  background: linear-gradient(to bottom, rgba(227, 242, 253, 0.85), rgba(255, 255, 255, 0.95))
+
+  h3
+    color: #1565c0
+    margin-top: 0
+
+.secao-aguardando-lede
+  font-size: 0.88rem
+  color: #424242
+  margin: 0 0 12px 0
+
+.secao-contabilizacao-devolucao
+  margin-top: 16px
+  padding-top: 12px
+  border-top: 1px solid rgba(21, 101, 192, 0.25)
+
+.titulo-contabilizacao-devolucao
+  color: #1565c0
+  margin: 0 0 8px 0
+  font-size: 1rem
+
+.resumo-contabilizacao-devolucao
+  font-size: 0.9rem
+  color: #333
+  margin: 0 0 10px 0
+
+.tabela-somatorio-devolucao
+  width: 100%
+  max-width: 560px
+  border-collapse: collapse
+  font-size: 0.9rem
+
+  th, td
+    border: 1px solid #bbdefb
+    padding: 6px 10px
+    text-align: left
+
+  th
+    background: rgba(187, 222, 251, 0.6)
+    font-weight: 600
+
+  .col-qtd-somatorio
+    text-align: right
+    white-space: nowrap
+    width: 6rem
+
+.linha-aguardando-devolucao-destaque td
+  background: rgba(227, 242, 253, 0.5)
+
+.linha-cancelada td
+  color: #c05050
+  text-decoration: line-through
+
+.linha-aguardando td
+  color: #2e75c9
+
+.linha-paga td
+  color: #2b8a4a
+
+.status-cancelado
+  color: #c05050
+  font-weight: 600
+
+.status-aguardando
+  color: #2e75c9
+  font-weight: 600
+
+.status-pago
+  color: #2b8a4a
+  font-weight: 600
+
+.totais
+  display: flex
+  justify-content: space-between
+  gap: 32px
+  font-size: 1rem
+  border-top: 2px solid #e0e0e0
+  padding-top: 20px
+  margin-top: 24px
+
+.totais-secao
+  flex: 1
+  display: flex
+  flex-direction: column
+  gap: 8px
+
+.totais-secao h4
+  margin: 0 0 8px 0
+  font-size: 1rem
+  font-weight: 600
+  color: #333
+  border-bottom: 1px solid #e0e0e0
+  padding-bottom: 4px
+
+.total-item
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 6px 0
+
+.total-item span
+  color: #666
+  font-size: 0.95rem
+
+.total-item strong
+  font-size: 1.1rem
+  font-weight: 600
+
+.total-bruto
+  border-top: 1px solid #e0e0e0
+  padding-top: 10px
+  margin-top: 4px
+
+.total-geral
+  border-top: 2px solid #1976d2
+  padding-top: 10px
+  margin-top: 8px
+
+.total-geral strong
+  font-size: 1.2rem
+  color: #333
+
+.valor-pago strong
+  color: #2e7d32
+
+.valor-pendente strong
+  color: #1976d2
+
+.desconto
+  .valor-desconto
+    color: #d32f2f
+

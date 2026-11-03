@@ -1,0 +1,49 @@
+<div class="col-lg-12 col-xxl-12">
+  <mat-card
+      class="mb-25 tagus-card"
+      [class.component-dark-theme]="themeService.isDark()"
+      [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+  >
+      <mat-card-content *ngIf="arquivos?.length == 0">
+        Sem itens na lista
+      </mat-card-content>
+
+      <mat-card-content *ngIf="arquivos?.length !=0">
+          <div class="recent-files-table table-responsive">
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th class="fw-semibold main-color">Nome</th>
+                          <th class="fw-semibold gray-color">Data Inclusão</th>
+                          <th class="fw-semibold gray-color">Ações</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let arquivo of arquivos">
+                          <td>
+                              <div class="name-info d-flex align-items-center">
+                                  <img src="assets/img/icon/gallery.png" alt="gallery">
+                                  <h5 class="fw-semibold mb-0">{{arquivo.nomeOriginal}}</h5>
+                              </div>
+                          </td>
+                          <td class="gray-color">{{arquivo.dataInclusao}}</td>
+                          <td>
+                              <button type="button" mat-button class="position-relative dot-btn p-0 bg-transparent border-none" [matMenuTriggerFor]="actionMenu">
+                                  <i class="ri-more-fill"></i>
+                              </button>
+                              <mat-menu #actionMenu="matMenu" class="dotMenu two monthMenu" xPosition="before">
+                                  <button mat-menu-item type="button" class="bg-transparent border-none position-relative" (click)="onclickDownloadInterno(arquivo)">
+                                      <i class="ri-download-cloud-line"></i> Download
+                                  </button>
+                                  <button mat-menu-item type="button" class="bg-transparent border-none position-relative" (click)="onclickRemoverInterno(arquivo)">
+                                      <i class="ri-delete-bin-line"></i> Remover
+                                  </button>
+                              </mat-menu>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </mat-card-content>
+  </mat-card>
+</div>

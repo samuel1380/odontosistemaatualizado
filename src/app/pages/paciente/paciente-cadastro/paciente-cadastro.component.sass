@@ -1,0 +1,6 @@
+$status-colors: ("pendente": red, "enviado": blue, "pago": green, "outro": orange)
+
+@each $status, $color in $status-colors
+  .status-#{$status}
+    color: $color
+    font-weight: bold

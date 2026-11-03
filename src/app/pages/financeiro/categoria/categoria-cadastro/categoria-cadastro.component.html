@@ -1,0 +1,119 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+      <div class="d-table-cell">
+        <div class="tagus-form ms-auto me-auto">
+          <mat-card class="mb-25 tagus-card">
+            <mat-card-header>
+                <h5 class="mb-0">Cadastrar Categoria</h5>
+            </mat-card-header>
+            <mat-card-content style="max-height: 65vh; overflow-y: auto; overflow-x: hidden;">
+              <form [formGroup]="categoriaForm">
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Nome</mat-label>
+                      <input matInput formControlName="nome" placeholder="Ex: Material de Consumo">
+                      <mat-error *ngIf="categoriaForm.get('nome')?.hasError('required')">
+                        Nome é obrigatório.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Tipo</mat-label>
+                      <mat-select formControlName="tipo">
+                        <mat-option *ngFor="let tipo of tiposCategoria" [value]="tipo.id">
+                          {{ tipo.nome }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Classificação na DRE</mat-label>
+                      <mat-select formControlName="classificacaoDre">
+                        <mat-option
+                          *ngFor="let item of classificacoesDre"
+                          [value]="item.id"
+                          [disabled]="item.tipo !== categoriaForm.get('tipo')?.value"
+                        >
+                          {{ item.nome }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="categoriaForm.get('tipo')?.value === 'DESPESA'">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Classificação de Despesa</mat-label>
+                      <mat-select formControlName="classificacaoDespesa">
+                        <mat-option [value]="null">Não classificar (opcional)</mat-option>
+                        <mat-option *ngFor="let item of classificacoesDespesa" [value]="item.id">
+                          {{ item.nome }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row" *ngIf="!categoria">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Subcategoria de (opcional)</mat-label>
+                      <mat-select formControlName="idCategoriaPai">
+                        <mat-option [value]="null">Nenhuma (categoria principal)</mat-option>
+                        <mat-option *ngFor="let cat of categoriasPai" [value]="cat.idCategoria">
+                          {{ cat.nome }} ({{ cat.tipo }})
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <p class="gray-color small">Se vazio, você pode adicionar subcategorias abaixo.</p>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="ehCategoriaPrincipal()">
+                  <div class="col-md-12">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <span class="mat-subtitle-1">Subcategorias</span>
+                      <button type="button" mat-icon-button color="primary" (click)="adicionarSubcategoria()" matTooltip="Adicionar subcategoria">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                    <div formArrayName="subcategorias" class="subcategorias-list">
+                      <div *ngFor="let item of subcategorias.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center gap-2 mb-2">
+                        <mat-form-field class="flex-grow-1">
+                          <mat-label>Nome da subcategoria</mat-label>
+                          <input matInput formControlName="nome" placeholder="Ex: Material de escritório">
+                        </mat-form-field>
+                        <button type="button" mat-icon-button (click)="removerSubcategoria(i)" matTooltip="Remover">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <button mat-button color="warn" *ngIf="categoria" (click)="excluir()" style="margin-right: auto;">Excluir</button>
+              <button mat-button (click)="dialogRef.close()">Cancelar</button>
+              <button mat-raised-button color="primary" [disabled]="!categoriaForm.valid" (click)="salvar()">Salvar</button>
+            </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

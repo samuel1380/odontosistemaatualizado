@@ -1,0 +1,63 @@
+<h1 mat-dialog-title>Importar OFX — contas a pagar</h1>
+<div mat-dialog-content>
+  <p class="text-muted small mb-3">
+    Serão importados apenas os débitos (valores negativos), já como pagos na conta selecionada. Transações já
+    importadas (mesmo FITID) são ignoradas. A categoria escolhida abaixo é usada como
+    <strong>padrão</strong> quando o extrato não tiver CPF/CNPJ identificável ou quando o fornecedor não tiver
+    categoria cadastrada; se o fornecedor for encontrado/criado e tiver categoria de despesa no cadastro, essa
+    categoria do fornecedor prevalece.
+  </p>
+  <form [formGroup]="form">
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field class="w-100">
+          <mat-label>Categoria de despesa</mat-label>
+          <mat-select formControlName="idCategoria" required>
+            <mat-option *ngFor="let c of categoriasOpts" [value]="c.id">{{ c.label }}</mat-option>
+          </mat-select>
+          <mat-hint>Categoria padrão quando não houver categoria no cadastro do fornecedor ou sem identificação no extrato.</mat-hint>
+          <mat-error>Selecione uma categoria</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field class="w-100">
+          <mat-label>Conta bancária (extrato)</mat-label>
+          <mat-select formControlName="idConta" required>
+            <mat-option *ngFor="let c of contas" [value]="c.idConta">
+              {{ c.nome || ('Conta #' + c.idConta) }}
+            </mat-option>
+          </mat-select>
+          <mat-error>Selecione a conta</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <label class="d-block mb-1">Arquivo OFX</label>
+        <input
+          type="file"
+          class="form-control"
+          accept=".ofx"
+          [disabled]="carregando"
+          (change)="onFileSelected($event)"
+        />
+        <small *ngIf="arquivoSelecionado" class="d-block mt-1">{{ arquivoSelecionado.name }}</small>
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="dialogRef.close()" [disabled]="carregando">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="importar()"
+    [disabled]="carregando || form.invalid"
+  >
+    <span *ngIf="carregando">Importando…</span>
+    <span *ngIf="!carregando">Importar</span>
+  </button>
+</div>

@@ -1,0 +1,22 @@
+<mat-form-field class="w100" appearance="fill">
+  <mat-label>{{titulo}}</mat-label>
+  <input [placeholder]="placeholder" #itemInput [formControl]="ItensCtrl"
+      [matChipInputFor]="chipGrid" [matAutocomplete]="auto"
+      [matChipInputSeparatorKeyCodes]="[]"
+      (matChipInputTokenEnd)="add($event)"
+      (keydown.enter)="keyDown($event)"
+  />
+  <mat-chip-grid #chipGrid aria-label="Selecionar" [formControl]="control">
+      <mat-chip-row *ngFor="let ctrl of itensSelected.controls; let i = index" removable="true" (removed)="remove(i)">
+        {{ ctrl.value[renderName] }}
+        <button matChipRemove [attr.aria-label]="'remove ' + ctrl.value[renderName]">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip-row>
+  </mat-chip-grid>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      <mat-option *ngFor="let item of filteredItens | async" [value]="item[nomeIdentificador]">
+          {{item[renderName]}}
+      </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

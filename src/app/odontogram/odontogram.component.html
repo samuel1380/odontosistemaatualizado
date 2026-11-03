@@ -1,0 +1,8 @@
+<div class="containerOdontogram">
+  <div class="parentTooth">
+    <div *ngFor="let tooth of teeth" [class]="getClass(tooth.number)" (click)="toggleTooth(tooth.number)">
+      <img [src]="getURL(tooth.number, tooth.condition)" >
+      <span>{{ tooth.number }}</span>
+    </div>
+  </div>
+</div>

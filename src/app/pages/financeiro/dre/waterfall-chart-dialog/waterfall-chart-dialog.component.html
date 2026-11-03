@@ -1,0 +1,30 @@
+<h2 mat-dialog-title class="dialog-title d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center gap-2">
+    <mat-icon>waterfall_chart</mat-icon>
+    Gráfico de Cascata (Waterfall) - Mês {{ data.mes }}
+  </div>
+  <button mat-icon-button (click)="fechar()">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content>
+  <div class="chart-container">
+    <canvas 
+      baseChart 
+      [data]="chartData" 
+      [options]="chartOptions" 
+      [type]="'bar'">
+    </canvas>
+  </div>
+  <div class="legenda-cascata mt-3 small text-muted">
+    <p class="mb-1"><strong>Receita Operacional:</strong> R$ {{ data.receitaOperacional | number:'1.2-2' }}</p>
+    <p class="mb-1"><strong>Despesas Variáveis:</strong> R$ {{ data.custoVariavel | number:'1.2-2' }}</p>
+    <p class="mb-1"><strong>Despesas Fixas:</strong> R$ {{ data.custoFixo | number:'1.2-2' }}</p>
+    <p class="mb-0"><strong>EBITDA:</strong> R$ {{ data.ebitdaAbsoluto | number:'1.2-2' }}</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="fechar()">Fechar</button>
+</mat-dialog-actions>

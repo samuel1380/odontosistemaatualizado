@@ -1,0 +1,224 @@
+<div class="dashboard-container">
+  <h2>Status de Trabalho e Retrabalho</h2>
+
+  <mat-card class="filters-card">
+    <mat-card-content class="filter-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Data Inicial</mat-label>
+        <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="dataInicio">
+        <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+        <mat-datepicker #pickerInicio></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Data Final</mat-label>
+        <input matInput [matDatepicker]="pickerFim" [(ngModel)]="dataFim">
+        <mat-datepicker-toggle matSuffix [for]="pickerFim"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFim></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="buscarDados()" [disabled]="loading">
+        Buscar
+      </button>
+
+      <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="summary-cards" *ngIf="!loading">
+    <mat-card class="summary-card">
+      <h3>Total de Trabalhos</h3>
+      <div class="value">{{ totalTrabalhos }}</div>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <h3>Retrabalhos</h3>
+      <div class="value" style="color: #f44336">{{ totalRetrabalhos }}</div>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <h3>Taxa de Retrabalho</h3>
+      <div class="value" [style.color]="taxaRetrabalho > 5 ? '#f44336' : '#4caf50'">
+        {{ taxaRetrabalho | number:'1.2-2' }}%
+      </div>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <h3>Bonificações</h3>
+      <div class="value" style="color: #ff9800">{{ totalBonificacoes }}</div>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <h3>Taxa de Bonificação</h3>
+      <div class="value" [style.color]="taxaBonificacao > 5 ? '#ff9800' : '#4caf50'">
+        {{ taxaBonificacao | number:'1.2-2' }}%
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="charts-row" *ngIf="!loading">
+    <mat-card class="chart-card">
+      <h3>Status Geral dos Trabalhos</h3>
+      <canvas baseChart
+        [data]="statusChartData"
+        [options]="statusChartOptions"
+        [type]="'pie'">
+      </canvas>
+    </mat-card>
+
+    <mat-card class="chart-card" style="flex: 2">
+      <h3>Evolução: Trabalhos vs Retrabalhos vs Bonificações</h3>
+      <canvas baseChart
+        [data]="timelineChartData"
+        [options]="timelineChartOptions"
+        [type]="'bar'">
+      </canvas>
+    </mat-card>
+  </div>
+
+  <!-- ======================== -->
+  <!-- RETRABALHO               -->
+  <!-- ======================== -->
+  <div class="charts-row" *ngIf="!loading">
+    <mat-card class="chart-card" style="flex: 7">
+      <h3>Retrabalhos por Empresa (Clique para Filtrar)</h3>
+      <canvas baseChart
+        [data]="companyRetrabalhoChartData"
+        [options]="companyRetrabalhoChartOptions"
+        [type]="'bar'">
+      </canvas>
+    </mat-card>
+
+    <mat-card class="chart-card" style="flex: 3; min-height: 300px; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="margin: 0;">
+          {{ selectedClinicaRetrabalho ? 'Motivos de Retrabalho - ' + selectedClinicaRetrabalho.nomeEmpresa : 'Motivos de Retrabalho Globais' }}
+        </h3>
+        <button mat-button color="warn" *ngIf="selectedClinicaRetrabalho" (click)="limparFiltroClinicaRetrabalho()" [disabled]="isFilteringRetrabalho">
+          Limpar Filtro
+        </button>
+      </div>
+
+      <div *ngIf="isFilteringRetrabalho" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <ng-container *ngIf="!isFilteringRetrabalho">
+        <canvas baseChart
+          [data]="motivesRetrabalhoChartData"
+          [options]="motivesRetrabalhoChartOptions"
+          [type]="'pie'">
+        </canvas>
+
+        <div *ngIf="selectedClinicaRetrabalho" style="margin-top: 24px;">
+          <h4>Lista Detalhada de Motivos ({{selectedClinicaRetrabalho.nomeEmpresa}})</h4>
+          <mat-chip-set style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <mat-chip *ngFor="let m of selectedClinicaRetrabalho.motivosRetrabalhoArray || selectedClinicaRetrabalho.motivosArray" color="warn" selected style="width: 100%; justify-content: space-between;">
+              <span style="font-weight: 500;">{{m.nome}}</span>
+              <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">{{m.count}} ocorrência(s)</span>
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </ng-container>
+    </mat-card>
+  </div>
+
+  <!-- ======================== -->
+  <!-- BONIFICAÇÃO              -->
+  <!-- ======================== -->
+  <div class="charts-row" *ngIf="!loading">
+    <mat-card class="chart-card" style="flex: 7">
+      <h3>Bonificações por Empresa (Clique para Filtrar)</h3>
+      <canvas baseChart
+        [data]="companyBonificacaoChartData"
+        [options]="companyBonificacaoChartOptions"
+        [type]="'bar'">
+      </canvas>
+    </mat-card>
+
+    <mat-card class="chart-card" style="flex: 3; min-height: 300px; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="margin: 0;">
+          {{ selectedClinicaBonificacao ? 'Motivos de Bonificação - ' + selectedClinicaBonificacao.nomeEmpresa : 'Motivos de Bonificação Globais' }}
+        </h3>
+        <button mat-button color="warn" *ngIf="selectedClinicaBonificacao" (click)="limparFiltroClinicaBonificacao()" [disabled]="isFilteringBonificacao">
+          Limpar Filtro
+        </button>
+      </div>
+
+      <div *ngIf="isFilteringBonificacao" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <ng-container *ngIf="!isFilteringBonificacao">
+        <canvas baseChart
+          [data]="motivesBonificacaoChartData"
+          [options]="motivesBonificacaoChartOptions"
+          [type]="'pie'">
+        </canvas>
+
+        <div *ngIf="selectedClinicaBonificacao" style="margin-top: 24px;">
+          <h4>Lista Detalhada de Motivos ({{selectedClinicaBonificacao.nomeEmpresa}})</h4>
+          <mat-chip-set style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <mat-chip *ngFor="let m of selectedClinicaBonificacao.motivosBonificacaoArray" color="accent" selected style="width: 100%; justify-content: space-between;">
+              <span style="font-weight: 500;">{{m.nome}}</span>
+              <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">{{m.count}} ocorrência(s)</span>
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </ng-container>
+    </mat-card>
+  </div>
+
+  <!-- ======================== -->
+  <!-- TABELA DETALHADA         -->
+  <!-- ======================== -->
+  <div class="charts-row" *ngIf="!loading">
+    <mat-card class="table-card" style="flex: 1; overflow-x: auto;">
+      <h3>Detalhamento por Clínica / Empresa</h3>
+      
+      <table mat-table [dataSource]="clinicas" class="mat-elevation-z1">
+        <ng-container matColumnDef="empresa">
+          <th mat-header-cell *matHeaderCellDef> Empresa </th>
+          <td mat-cell *matCellDef="let element"> {{element.nomeEmpresa}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef> Total Trabalhos </th>
+          <td mat-cell *matCellDef="let element"> {{element.totalTrabalhos}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="retrabalho">
+          <th mat-header-cell *matHeaderCellDef> Retrabalhos </th>
+          <td mat-cell *matCellDef="let element"> {{element.totalRetrabalhos}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="bonificacao">
+          <th mat-header-cell *matHeaderCellDef> Bonificações </th>
+          <td mat-cell *matCellDef="let element"> {{element.totalBonificacoes}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="taxa">
+          <th mat-header-cell *matHeaderCellDef> Taxa Retrabalho % </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{ (element.totalTrabalhos ? (element.totalRetrabalhos / element.totalTrabalhos * 100) : 0) | number:'1.1-1' }}% 
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="motivos">
+          <th mat-header-cell *matHeaderCellDef> Motivos (Retrabalho) </th>
+          <td mat-cell *matCellDef="let element"> 
+            <mat-chip-set>
+              <mat-chip *ngFor="let m of element.motivosRetrabalhoArray || element.motivosArray" color="warn" selected>
+                {{m.nome}} ({{m.count}})
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card>
+  </div>
+</div>

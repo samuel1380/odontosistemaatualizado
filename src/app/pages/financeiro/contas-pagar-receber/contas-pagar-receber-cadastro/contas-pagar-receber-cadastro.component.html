@@ -1,0 +1,244 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+      <div class="d-table-cell">
+        <div class="tagus-form ms-auto me-auto">
+          <mat-card class="mb-25 tagus-card">
+            <mat-card-header>
+                <h5 class="mb-0">Lançamento</h5>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="lancamentoForm">
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Descrição</mat-label>
+                      <input #descricaoInput matInput formControlName="descricao" placeholder="Ex: Pagamento de fatura">
+                      <mat-error *ngIf="lancamentoForm.get('descricao')?.hasError('required')">
+                        Descrição é obrigatória.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Tipo</mat-label>
+                      <mat-select formControlName="tipo">
+                        <mat-option *ngFor="let tipo of tiposLancamento" [value]="tipo.id">
+                          {{tipo.nome}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Categoria</mat-label>
+                      <mat-select formControlName="idCategoriaPai">
+                        <mat-option *ngFor="let cat of categoriasPaiFiltradas" [value]="cat.idCategoria">
+                          {{ cat.nome }}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="lancamentoForm.get('idCategoriaPai')?.hasError('required')">
+                        Categoria é obrigatória.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Subcategoria (opcional)</mat-label>
+                      <mat-select formControlName="idSubcategoria">
+                        <mat-option [value]="null">Nenhuma</mat-option>
+                        <mat-option *ngFor="let sub of subcategoriasDaCategoria" [value]="sub.idCategoria">
+                          {{ sub.nome }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6" *ngIf="lancamentoForm.get('tipo')?.value === 'DESPESA'">
+                    <mat-form-field class="w100">
+                      <mat-label>Fornecedor (opcional)</mat-label>
+                      <mat-select formControlName="idFornecedor">
+                        <mat-option [value]="null">Nenhum</mat-option>
+                        <mat-option *ngFor="let f of listaFornecedores" [value]="f.idFornecedor">
+                          {{ f.nomeFantasia || f.razaoSocial }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-12" *ngIf="exibirSelectEmprestimo">
+                    <mat-form-field class="w100">
+                      <mat-label>Empréstimo (pagamento da dívida)</mat-label>
+                      <mat-select formControlName="idEmprestimo">
+                        <mat-option *ngFor="let e of emprestimosParaPagamento" [value]="e.idEmprestimo">
+                          #{{ e.idEmprestimo }} — Saldo: {{ (e.saldoRestante ?? e.valorPrincipal) | currency:'BRL':'symbol':'1.2-2' }}
+                          (principal {{ e.valorPrincipal | currency:'BRL':'symbol':'1.2-2' }})
+                        </mat-option>
+                      </mat-select>
+                      <mat-hint>Obrigatório para categoria com saídas de financiamento / juros / empréstimos.</mat-hint>
+                      <mat-error *ngIf="lancamentoForm.get('idEmprestimo')?.hasError('required')">
+                        Selecione o empréstimo.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-12">
+                    <mat-form-field class="w100">
+                      <mat-label>Valor Total</mat-label>
+                      <span matTextPrefix>R$&nbsp;</span>
+                      <input type="number" matInput formControlName="valorTotal" placeholder="0,00">
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Número do documento</mat-label>
+                      <input matInput formControlName="numeroDocumento" placeholder="Ex: NF 12345, boleto 67890">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Data de Competência</mat-label>
+                      <input matInput [matDatepicker]="pickerCompetencia" formControlName="dataCompetencia">
+                      <mat-datepicker-toggle matIconSuffix [for]="pickerCompetencia"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerCompetencia></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-4">
+                    <mat-form-field class="w100">
+                      <mat-label>Data de Emissão</mat-label>
+                      <input matInput [matDatepicker]="pickerEmissao" formControlName="dataEmissao">
+                      <mat-datepicker-toggle matIconSuffix [for]="pickerEmissao"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerEmissao></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Meio de Pagamento</mat-label>
+                      <mat-select formControlName="meioPagamento">
+                        <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+                          {{meio.nome}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Seção de Parcelas -->
+                <div class="row mt-2">
+                  <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h6 class="mb-0" style="font-size: 14px; font-weight: 600;">Parcelas</h6>
+                      <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 12px; color: #64748b;">{{ parcelasEditaveis.length }} parcela(s)</span>
+                        <button mat-icon-button type="button" color="warn" (click)="removerUltimaParcela()" [disabled]="parcelasEditaveis.length <= 1" matTooltip="Remover última parcela">
+                          <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
+                        <button mat-icon-button type="button" color="primary" (click)="adicionarParcela()" matTooltip="Adicionar parcela">
+                          <mat-icon>add_circle_outline</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Indicador de diferença -->
+                    <div *ngIf="parcelasEditaveis.length > 0 && !parcelasValidas" class="mb-2 p-2 rounded" style="background: #fef2f2; border: 1px solid #fecaca; font-size: 12px; color: #dc2626;">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom;">warning</mat-icon>
+                      Diferença: {{ diferencaTotal | currency:'BRL' }} — ajuste os valores das parcelas.
+                    </div>
+                    <div *ngIf="parcelasEditaveis.length > 0 && parcelasValidas" class="mb-2 p-2 rounded" style="background: #f0fdf4; border: 1px solid #bbf7d0; font-size: 12px; color: #166534;">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: text-bottom;">check_circle</mat-icon>
+                      Soma das parcelas correta: {{ totalParcelasEditaveis | currency:'BRL' }}
+                    </div>
+
+                    <!-- Linha de cada parcela -->
+                    <div *ngFor="let parcela of parcelasEditaveis; let i = index" class="row mb-2 align-items-center p-2 rounded" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                      <div class="col-auto" style="min-width: 60px;">
+                        <span class="badge" style="background: #3b82f6; color: white; font-size: 12px; font-weight: 600;">{{ (i + 1) + '/' + parcelasEditaveis.length }}</span>
+                      </div>
+                      <div class="col">
+                        <mat-form-field class="w-100" appearance="outline" style="margin-bottom: -1.25em;">
+                          <mat-label>Valor</mat-label>
+                          <span matTextPrefix>R$&nbsp;</span>
+                          <input type="number" matInput [(ngModel)]="parcela.valor" [ngModelOptions]="{standalone: true}" min="0" step="0.01">
+                        </mat-form-field>
+                      </div>
+                      <div class="col">
+                        <mat-form-field class="w-100" appearance="outline" style="margin-bottom: -1.25em;">
+                          <mat-label>Vencimento</mat-label>
+                          <input matInput type="date" [(ngModel)]="parcela.dataVencimentoStr" [ngModelOptions]="{standalone: true}" (change)="i === 0 ? onDataPrimeiraParcelaChange() : null">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-checkbox formControlName="gerarJuros">
+                      Gerar juros e multa em caso de atraso
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <mat-checkbox formControlName="pagamentoImediato">
+                      Marcar como pago imediatamente
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <div class="row" *ngIf="lancamentoForm.get('pagamentoImediato')?.value">
+                  <div class="col-md-6">
+                    <mat-form-field class="w100">
+                      <mat-label>Conta para Pagamento</mat-label>
+                      <mat-select formControlName="idContaPagamento">
+                        <mat-option *ngFor="let conta of listaContas" [value]="conta.idConta">
+                          {{conta.nome}}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="lancamentoForm.get('idContaPagamento')?.hasError('required')">
+                        Conta é obrigatória quando o pagamento imediato está marcado.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+              </form>
+            </mat-card-content>
+            <div class="contas-pagar-receber-cadastro__criar-outro-row">
+              <mat-checkbox
+                [(ngModel)]="criarOutro"
+                [ngModelOptions]="{ standalone: true }"
+                color="primary">
+                Criar outro
+              </mat-checkbox>
+            </div>
+            <mat-card-actions align="end">
+              <button mat-button type="button" (click)="dialogRef.close()">Cancelar</button>
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                [disabled]="!lancamentoForm.valid || salvando"
+                (click)="salvar()">
+                {{ salvando ? 'Salvando...' : 'Salvar' }}
+              </button>
+            </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

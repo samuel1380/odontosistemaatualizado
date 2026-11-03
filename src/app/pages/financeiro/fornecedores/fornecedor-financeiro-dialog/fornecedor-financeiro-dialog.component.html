@@ -1,0 +1,67 @@
+<div class="mb-25 tagus-card">
+  <div class="d-table">
+    <div class="d-table-cell">
+      <div class="tagus-form ms-auto me-auto">
+        <mat-card class="mb-25 tagus-card">
+          <mat-card-header>
+            <h5 class="mb-0">{{ isEdit ? 'Editar Fornecedor' : 'Cadastrar Fornecedor' }}</h5>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="form">
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>CNPJ (opcional, texto livre)</mat-label>
+                    <input matInput formControlName="cnpj" autocomplete="off" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>CPF (opcional, texto livre)</mat-label>
+                    <input matInput formControlName="cpf" autocomplete="off" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>Razão Social</mat-label>
+                    <input matInput formControlName="razaoSocial" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>Nome Fantasia (opcional)</mat-label>
+                    <input matInput formControlName="nomeFantasia" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>Telefone</mat-label>
+                    <input matInput formControlName="telefone" placeholder="(00) 00000-0000" />
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="w-100">
+                    <mat-label>Categoria de despesa padrão (opcional)</mat-label>
+                    <mat-select formControlName="idCategoria">
+                      <mat-option [value]="null">— Nenhuma —</mat-option>
+                      <mat-option *ngFor="let c of categoriasOpts" [value]="c.id">{{ c.label }}</mat-option>
+                    </mat-select>
+                    <mat-hint>Usada na classificação automática em contas a pagar quando o fornecedor for identificado.</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-button (click)="dialogRef.close()">Cancelar</button>
+            <button mat-raised-button color="primary" (click)="salvar()" [disabled]="form.invalid">Salvar</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

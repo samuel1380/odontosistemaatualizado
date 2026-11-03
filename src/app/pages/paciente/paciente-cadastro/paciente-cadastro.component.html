@@ -1,0 +1,132 @@
+<mat-card class="mb-25 tagus-card">
+  <div class="d-flex align-items-center mb-3">
+    <h3 mat-dialog-title class="mb-0" style="margin-right: 15px;">{{ isEditMode ? 'Paciente' : 'Novo Paciente' }}</h3>
+    <span *ngIf="boletosAtrasadosCount > 0" class="badge bg-danger cursor-pointer p-2 fs-6" style="cursor: pointer;" (click)="abrirPendencias()">
+      <mat-icon style="vertical-align: middle; font-size: 18px; height: 18px; width: 18px; margin-right: 4px;">warning</mat-icon>
+      Cliente em Atraso ({{boletosAtrasadosCount}})
+    </span>
+  </div>
+
+  <div mat-dialog-content [formGroup]="form">
+    <div class="row">
+      <div class="col-md-4">
+        <mat-form-field class="w-100">
+          <mat-label>Nome do Paciente</mat-label>
+          <input matInput formControlName="nome" placeholder="Digite o nome do paciente" required>
+          <mat-error *ngIf="form.get('nome')?.hasError('required')">
+            O nome do paciente é obrigatório.
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
+        <app-single-selection *ngIf="(empresas$ | async)?.length"
+            formControlName="idEmpresa"
+            [lista$]="empresas$"
+            nomeIdentificador="idEmpresa"
+            titulo="Empresa"
+            placeholder="Pesquisar empresa...">
+        </app-single-selection>
+      </div>
+      <div class="col-md-4">
+        <app-single-selection *ngIf="(dentistas$ | async)?.length"
+            formControlName="idProfissional"
+            [lista$]="dentistas$"
+            nomeIdentificador="idDentista"
+            titulo="Dentista"
+            placeholder="Pesquisar dentista...">
+        </app-single-selection>
+      </div>
+    </div>
+
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()" *ngIf="dialogRef">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="handleSave()" [disabled]="form.invalid">{{ isEditMode ? 'Atualizar' : 'Cadastrar' }}</button>
+    </div>
+
+    <div *ngIf="isEditMode">
+      <mat-divider class="mt-3 mb-3"></mat-divider>
+      <div class="row mb-2">
+        <div class="col-md-12 text-end">
+          <button mat-stroked-button color="primary" (click)="imprimirHistoricoPaciente()">
+            Imprimir histórico de trabalhos
+          </button>
+        </div>
+      </div>
+      <div formArrayName="trabalhos">
+        <div *ngFor="let trabalho of trabalhosFormArray.controls; let i = index" [formGroupName]="i">
+          <div class="trabalho-container">
+            <div class="trabalho-header">
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Trabalho #{{trabalho.get('idTrabalho')?.value || 'Novo'}}</h4>
+                </div>
+                <div class="col-md-6">
+                  <div class="text-end">
+                    <button mat-icon-button
+                            *ngIf="!trabalho.get('editando')?.value"
+                            (click)="imprimirTrabalho(i)"
+                            [title]="'Imprimir Trabalho'">
+                      <mat-icon>print</mat-icon>
+                    </button>
+                    <button mat-icon-button
+                            (click)="trabalho.get('editando')?.value ? descartarAlteracoesTrabalho(i) : toggleEditTrabalho(i)"
+                            [title]="trabalho.get('editando')?.value ? 'Descartar alterações' : 'Editar Trabalho'">
+                      <mat-icon>{{ trabalho.get('editando')?.value ? 'cancel' : 'edit' }}</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modo de Edição -->
+            <div *ngIf="trabalho.get('editando')?.value; else modoVisualizacao">
+              <app-trabalho-cadastro
+                [formGroup]="getTrabalhoFormGroup(trabalho)"
+                [produtoList]="produtoList"
+                [allItensElementos$]="allItensElementos$"
+                [allItensComponentes$]="allItensComponentes$"
+              ></app-trabalho-cadastro>
+            </div>
+
+            <!-- Modo de Visualização -->
+            <ng-template #modoVisualizacao>
+              <div class="view-mode">
+                <div class="row">
+                  <div class="col-md-6">
+                      <h4><strong>Status:</strong>
+                        <span [ngClass]="{
+                          'status-pendente': trabalho.get('status')?.value === 'PENDENTE',
+                          'status-enviado': trabalho.get('status')?.value === 'ENVIADO' || trabalho.get('status')?.value === 'ENVIADO_PROVA',
+                          'status-pago': trabalho.get('status')?.value === 'PAGAMENTO_RECEBIDO',
+                          'status-outro': !['PENDENTE', 'ENVIADO', 'ENVIADO_PROVA', 'PAGAMENTO_RECEBIDO'].includes(trabalho.get('status')?.value)
+                        }">
+                          {{trabalho.get('status')?.value}} <span *ngIf="trabalho.get('retrabalho')?.value" style="font-weight: bold; color: red;">(Retrabalho) </span>
+                        </span>
+                      </h4>
+                      <div><strong>Serviços:</strong>
+                        <span *ngFor="let servico of trabalho.get('servicos')?.value; let isLast = last">
+                          {{ getNomeProduto(servico) }}{{ !isLast ? ', ' : '' }}
+                        </span>
+                      </div>
+                      <div><strong>Cor:</strong> {{ trabalho.get('cor')?.value || 'N/A' }}</div>
+                      <div><strong>Observações:</strong> {{ trabalho.get('observacao')?.value || 'Nenhuma' }}</div>
+                  </div>
+                  <div class="col-md-6">
+                    <div><strong>Componentes:</strong> {{ getNomesComponentes(getTrabalhoFormGroup(trabalho)) }}</div>
+                    <div><strong>Elementos Dentais:</strong> {{ getNomesElementos(getTrabalhoFormGroup(trabalho)) }}</div>
+                    <div *ngIf="trabalho.get('anotacoes')?.value"><strong>Anotações:</strong> {{ trabalho.get('anotacoes')?.value }}</div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <br />
+          <mat-divider class="mt-2 mb-2"></mat-divider>
+          <br />
+          <br />
+        </div>
+      </div>
+      <button mat-stroked-button color="primary" (click)="adicionarTrabalho()" class="mt-3">Adicionar Trabalho</button>
+    </div>
+  </div>
+</mat-card>

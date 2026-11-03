@@ -1,0 +1,109 @@
+<mat-card class="mb-25 tagus-card"
+  [class.component-dark-theme]="themeService.isDark()"
+  [class.card-borderd-theme]="themeService.isCardBorder()"
+  [class.card-border-radius]="themeService.isCardBorderRadius()">
+  <mat-card-header>
+    <h5 class="mb-0">Dashboard Financeiro</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-4">
+        <app-single-selection
+          [formControl]="empresaFilter"
+          [lista$]="empresas$"
+          nomeIdentificador="idEmpresa"
+          titulo="Empresa"
+          placeholder="Todas as empresas">
+        </app-single-selection>
+      </div>
+      <div class="col-md-4">
+        <mat-form-field class="w-100">
+          <mat-label>Mês</mat-label>
+          <mat-select [formControl]="mesFilter">
+            <mat-option *ngFor="let mes of listaMeses" [value]="mes.id">{{ mes.nome }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
+        <mat-form-field class="w-100">
+          <mat-label>Ano</mat-label>
+          <input matInput type="number" [formControl]="anoFilter" />
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Cards de Resumo -->
+<div class="row" *ngIf="dashboard && !carregando">
+  <div class="col-md-3">
+    <mat-card class="single-stats-box tagus-card mb-25">
+      <div class="d-flex justify-content-space-between align-items-center">
+        <div class="title">
+          <h3>{{ dashboard.saldoTotal | currency:'BRL' }}</h3>
+          <span class="d-block gray-color">Saldo Total</span>
+        </div>
+        <div class="icon">
+          <i class="flaticon-donut-chart"></i>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <div class="col-md-3">
+    <mat-card class="single-stats-box tagus-card mb-25">
+      <div class="d-flex justify-content-space-between align-items-center">
+        <div class="title">
+          <h3 class="text-success">{{ dashboard.receitasMes | currency:'BRL' }}</h3>
+          <span class="d-block gray-color">Receitas do Mês</span>
+        </div>
+        <div class="icon">
+          <i class="flaticon-donut-chart"></i>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <div class="col-md-3">
+    <mat-card class="single-stats-box tagus-card mb-25">
+      <div class="d-flex justify-content-space-between align-items-center">
+        <div class="title">
+          <h3 class="text-danger">{{ dashboard.despesasMes | currency:'BRL' }}</h3>
+          <span class="d-block gray-color">Despesas do Mês</span>
+        </div>
+        <div class="icon">
+          <i class="flaticon-donut-chart"></i>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <div class="col-md-3">
+    <mat-card class="single-stats-box tagus-card mb-25">
+      <div class="d-flex justify-content-space-between align-items-center">
+        <div class="title">
+          <h3 class="text-warning">{{ dashboard.dividasPendentes | currency:'BRL' }}</h3>
+          <span class="d-block gray-color">Dívidas Pendentes</span>
+        </div>
+        <div class="icon">
+          <i class="flaticon-donut-chart"></i>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Movimentações Recentes -->
+<mat-card class="mb-25 tagus-card" *ngIf="dashboard && !carregando">
+  <mat-card-header>
+    <h5 class="mb-0">Movimentações Recentes</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <app-listagem
+      [lista]="movimentacoesDataSource"
+      [columns]="displayedColumnsMovimentacoes">
+    </app-listagem>
+  </mat-card-content>
+</mat-card>
+
+<div *ngIf="carregando" class="d-flex justify-content-center p-4">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+

@@ -1,0 +1,48 @@
+<h1 mat-dialog-title>Importar Arquivo OFX</h1>
+<div mat-dialog-content>
+    <form [formGroup]="importarForm">
+        <div class="row">
+            <div class="col-md-12">
+                <app-single-selection
+                    [formControl]="idContaControl"
+                    [lista$]="contas$"
+                    nomeIdentificador="idConta"
+                    titulo="Conta Bancária"
+                    placeholder="Selecione a conta bancária"
+                    [required]="true">
+                </app-single-selection>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="w-100">
+                    <label class="mat-form-field-label">Arquivo OFX</label>
+                    <input
+                        type="file"
+                        class="form-control"
+                        (change)="onFileSelected($event)"
+                        accept=".ofx"
+                        [disabled]="carregando">
+                    <mat-hint *ngIf="arquivoSelecionado" class="mat-hint">
+                        Arquivo selecionado: {{ arquivoSelecionado.name }}
+                    </mat-hint>
+                    <mat-error *ngIf="arquivoControl.invalid && arquivoControl.touched" class="mat-error">
+                        Por favor, selecione um arquivo .ofx
+                    </mat-error>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()" [disabled]="carregando">Cancelar</button>
+    <button
+        mat-raised-button
+        color="primary"
+        (click)="importar()"
+        [disabled]="importarForm.invalid || carregando">
+        <span *ngIf="carregando">Importando...</span>
+        <span *ngIf="!carregando">Importar</span>
+    </button>
+</div>

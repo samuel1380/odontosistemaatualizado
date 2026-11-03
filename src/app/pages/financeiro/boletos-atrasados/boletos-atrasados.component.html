@@ -1,0 +1,123 @@
+<mat-card class="mb-25 tagus-card"
+  [class.component-dark-theme]="themeService.isDark()"
+  [class.card-borderd-theme]="themeService.isCardBorder()"
+  [class.card-border-radius]="themeService.isCardBorderRadius()">
+  <mat-card-header>
+    <h5 class="mb-0">Boletos Atrasados</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row align-items-center">
+      <div class="col-md-4">
+        <app-single-selection
+          [formControl]="empresaFilter"
+          [lista$]="empresas$"
+          nomeIdentificador="idEmpresa"
+          titulo="Empresa"
+          placeholder="Todas as empresas">
+        </app-single-selection>
+      </div>
+      <div class="col-md-4">
+        <mat-form-field class="w-100" appearance="fill">
+          <mat-label>Tipo</mat-label>
+          <mat-select [formControl]="tipoFilter">
+            <mat-option [value]="null">Todos os tipos</mat-option>
+            <mat-option value="RECEITA">Receitas</mat-option>
+            <mat-option value="DESPESA">Despesas</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 text-end">
+        <button mat-stroked-button color="accent" (click)="imprimirPdf()" [disabled]="carregando || listaBoletos.data.length === 0" matTooltip="Imprimir relatório em PDF">
+          <i class="ri-printer-line me-1"></i> Imprimir PDF
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="tagus-card">
+  <mat-card-content>
+    <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!carregando && listaBoletos.data.length === 0" class="text-center p-4">
+      <p>Nenhum boleto atrasado encontrado.</p>
+    </div>
+
+    <div *ngIf="!carregando && listaBoletos.data.length > 0" class="mat-elevation-z8 tagus-mat-table">
+      <table mat-table [dataSource]="listaBoletos" class="w-100">
+        
+        <!-- Coluna Data Vencimento -->
+        <ng-container matColumnDef="dataVencimento">
+          <th mat-header-cell *matHeaderCellDef>Data Vencimento</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.dataVencimento | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <!-- Coluna Empresa/Fornecedor -->
+        <ng-container matColumnDef="nomeEmpresa">
+          <th mat-header-cell *matHeaderCellDef>Empresa/Fornecedor</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.nomeEmpresa || '-' }}</td>
+        </ng-container>
+
+        <!-- Coluna Descrição -->
+        <ng-container matColumnDef="descricao">
+          <th mat-header-cell *matHeaderCellDef>Descrição</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.descricao }}</td>
+        </ng-container>
+
+        <!-- Coluna Tipo -->
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.tipo }}</td>
+        </ng-container>
+
+        <!-- Coluna Valor Restante -->
+        <ng-container matColumnDef="valorRestante">
+          <th mat-header-cell *matHeaderCellDef>Valor Restante</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.valorRestante | currency:'BRL' }}</td>
+        </ng-container>
+
+        <!-- Coluna Dias Atraso -->
+        <ng-container matColumnDef="diasAtraso">
+          <th mat-header-cell *matHeaderCellDef>Dias Atraso</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.diasAtraso }}</td>
+        </ng-container>
+
+        <!-- Coluna Juros -->
+        <ng-container matColumnDef="juros">
+          <th mat-header-cell *matHeaderCellDef>Juros</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.juros || 0 | currency:'BRL' }}</td>
+        </ng-container>
+
+        <!-- Coluna Multa -->
+        <ng-container matColumnDef="multa">
+          <th mat-header-cell *matHeaderCellDef>Multa</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.multa || 0 | currency:'BRL' }}</td>
+        </ng-container>
+
+        <!-- Coluna Total com Juros -->
+        <ng-container matColumnDef="valorTotalComJuros">
+          <th mat-header-cell *matHeaderCellDef>Total com Juros</th>
+          <td mat-cell *matCellDef="let boleto">{{ boleto.valorTotalComJuros || boleto.valorRestante | currency:'BRL' }}</td>
+        </ng-container>
+
+        <!-- Coluna Ações -->
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let boleto">
+            <button mat-raised-button color="primary" (click)="quitarBoleto(boleto)" 
+                    [disabled]="carregando"
+                    matTooltip="Quitar Boleto">
+              Quitar
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsWithActions"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsWithActions;"></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
+

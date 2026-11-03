@@ -1,0 +1,96 @@
+<div class="mb-25 tagus-card">
+  <mat-card>
+    <mat-card-header>
+      <h5 class="mb-0">Gestão de Usuários</h5>
+      <div class="d-flex align-items-center gap-2">
+        <mat-form-field appearance="outline" style="width: 250px;">
+          <mat-label>Filtrar por Empresa</mat-label>
+          <mat-select [formControl]="empresaFilter">
+            <mat-option [value]="null">Todas as empresas</mat-option>
+            <mat-option *ngFor="let empresa of empresas" [value]="empresa.idEmpresa">
+              {{ empresa.nomeFantasia || empresa.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="abrirCadastro()">
+          <mat-icon>add</mat-icon>
+          Novo Usuário
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="mat-elevation-z8 tagus-mat-table">
+        <table mat-table [dataSource]="listaUsuarios">
+          <!-- Coluna Nome -->
+          <ng-container matColumnDef="nome">
+            <th mat-header-cell *matHeaderCellDef>Nome</th>
+            <td mat-cell *matCellDef="let usuario">{{ usuario.nome }}</td>
+          </ng-container>
+
+          <!-- Coluna Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let usuario">{{ usuario.email }}</td>
+          </ng-container>
+
+          <!-- Coluna Tipo -->
+          <ng-container matColumnDef="tipoUsuario">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let usuario">{{ usuario.tipoUsuario }}</td>
+          </ng-container>
+
+          <!-- Coluna Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let usuario">
+              <span [ngClass]="getStatusClass(usuario)">
+                {{ getStatusText(usuario) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Empresas -->
+          <ng-container matColumnDef="empresas">
+            <th mat-header-cell *matHeaderCellDef>Empresas</th>
+            <td mat-cell *matCellDef="let usuario">{{ getEmpresasText(usuario) }}</td>
+          </ng-container>
+
+          <!-- Coluna Ações -->
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let usuario">
+              <button mat-icon-button color="primary" (click)="abrirEdicao(usuario)" title="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" (click)="abrirPermissoes(usuario)" title="Gerenciar Permissões">
+                <mat-icon>security</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="resetarSenha(usuario)" title="Resetar Senha">
+                <mat-icon>key</mat-icon>
+              </button>
+              <button 
+                *ngIf="usuario.ativo" 
+                mat-icon-button 
+                color="warn" 
+                (click)="inativarUsuario(usuario)" 
+                title="Inativar">
+                <mat-icon>block</mat-icon>
+              </button>
+              <button 
+                *ngIf="!usuario.ativo" 
+                mat-icon-button 
+                color="primary" 
+                (click)="ativarUsuario(usuario)" 
+                title="Ativar">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

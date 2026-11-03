@@ -1,0 +1,105 @@
+<div [formGroup]="formGroup">
+  <mat-card class="mb-25 tagus-card" *ngIf="canEditStatus">
+    <mat-form-field class="w100 p5">
+      <mat-label>Status</mat-label>
+      <mat-select matNativeControl formControlName="status" (selectionChange)="onChangeStatus()">
+        <mat-option *ngFor="let status of statusTrabalho" [value]="status">{{status}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="motivo-toggle-bloco w100 p5">
+      <mat-slide-toggle formControlName="retrabalho">Retrabalho</mat-slide-toggle>
+      <mat-form-field class="w100 motivo-motivos-field" *ngIf="formGroup.get('retrabalho')?.value">
+        <mat-label>Motivos de retrabalho</mat-label>
+        <mat-select formControlName="motivosRetrabalhoIds" multiple>
+          <mat-option *ngFor="let motivo of motivosRetrabalho" [value]="motivo.idMotivo">{{motivo.nome}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="formGroup.get('motivosRetrabalhoIds')?.invalid">
+          Selecione pelo menos 1 motivo.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="motivo-toggle-bloco w100 p5">
+      <mat-slide-toggle formControlName="bonificacao">Bonificação</mat-slide-toggle>
+      <mat-form-field class="w100 motivo-motivos-field" *ngIf="formGroup.get('bonificacao')?.value">
+        <mat-label>Motivos de bonificação</mat-label>
+        <mat-select formControlName="motivosBonificacaoIds" multiple>
+          <mat-option *ngFor="let motivo of motivosBonificacao" [value]="motivo.idMotivo">{{motivo.nome}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="formGroup.get('motivosBonificacaoIds')?.invalid">
+          Selecione pelo menos 1 motivo.
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-card>
+
+  <mat-card class="mb-25 tagus-card relative" *ngIf="!isLoadding">
+    <button mat-mini-fab color="primary" class="addbutton" (click)="adicionarServico()">
+      <mat-icon>add_box</mat-icon>
+    </button>
+    <div formArrayName="servicos">
+      <div *ngFor="let servico of servicos.controls; let i = index" [formGroupName]="i">
+        <div class="relative">
+          <mat-form-field class="w100">
+            <mat-label>Serviço</mat-label>
+            <mat-select matNativeControl formControlName="idProduto">
+              <mat-option *ngFor="let produto of produtoList" [value]="produto.idProduto">{{produto.nome}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div formArrayName="elementos">
+            <div class="w100" *ngIf="!isLoadding">
+              <app-multiple-selection
+                [listSubscription]="allItensElementos$"
+                [itensSelected]="getElementos(getServicoFormGroup(servico))"
+                nomeIdentificador="idElementoTrabalho"
+                renderName="nome"
+                [unicItem]=true
+                [allowCreateNew]=true
+                titulo="Elementos Dentais"
+                placeholder="Digite o código dos trabalhos"
+                [control]="getElementosControl(getServicoFormGroup(servico))"
+              ></app-multiple-selection>
+            </div>
+          </div>
+          <button mat-mini-fab color="accent" class="removebutton" (click)="removerServico(i)">
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+          <hr />
+          <br/>
+        </div>
+      </div>
+    </div>
+
+    <mat-form-field class="w100 p5">
+      <mat-label>Cor</mat-label>
+      <input type="text" matInput formControlName="cor">
+    </mat-form-field>
+
+    <div formArrayName="componentes">
+      <div class="w100 p5" *ngIf="!isLoadding">
+        <app-multiple-selection
+          [listSubscription]="allItensComponentes$"
+          [itensSelected]="getComponentes()"
+          nomeIdentificador="idComponente"
+          renderName="nome"
+          titulo="Componentes"
+          placeholder="Digite o nome dos componentes"
+        ></app-multiple-selection>
+      </div>
+    </div>
+
+    <div>
+      <mat-form-field class="w100 p5">
+        <mat-label>Observações</mat-label>
+        <textarea matInput rows="5" formControlName="observacao"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="w100 p5" *ngIf="isAdmin">
+        <mat-label>Anotações</mat-label>
+        <textarea matInput rows="5" formControlName="anotacoes"></textarea>
+      </mat-form-field>
+    </div>
+  </mat-card>
+</div>

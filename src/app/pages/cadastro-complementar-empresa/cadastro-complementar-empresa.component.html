@@ -1,0 +1,95 @@
+<div class="contentCadastro">
+  <h1 mat-dialog-title>Cadastro Complementar</h1>
+
+  <form class="cadastroParceiro" (ngSubmit)=onSubmitButton($event)>
+    <!-- <h3>Escolha os produtos que o parceiro utilizará</h3>
+    <div class="produtosList" *ngIf="produtosList.length != 0">
+      <mat-checkbox *ngFor="let produto of produtosList" class="example-margin" [checked]="hasActiveProduto(produto.idProduto)" (change)="setProduto($event.checked, produto.idProduto)">
+        {{produto.nome}}
+      </mat-checkbox>
+    </div>
+
+    <br />
+    <br />
+
+    <h3>Escolha os componentes que o parceiro utilizará</h3>
+    <div class="componentesList" *ngIf="componentesList.length != 0">
+      <mat-checkbox *ngFor="let componente of componentesList" class="example-margin" [checked]="hasActiveComponent(componente.idComponente)" (change)="setComponentes($event.checked, componente.idComponente)">
+        {{componente.nome}}
+      </mat-checkbox>
+    </div> -->
+
+    <br />
+    <br />
+
+    <!-- <h3>Escolha escala de cor que o parceiro utilizará</h3>
+    <div class="coresList" *ngIf="coresList.length != 0">
+      <mat-radio-group [formControl]="coresControl">
+        <mat-radio-button *ngFor="let cor of coresList" [value]="cor.idCor">{{cor.nome}}</mat-radio-button>
+      </mat-radio-group>
+    </div> -->
+    <mat-form-field class="w50 p5">
+      <mat-label>Tabela de Preço</mat-label>
+      <mat-select matNativeControl [formControl]="tabelaDePrecoProdutoFormControl">
+        <mat-option *ngFor="let tabelaPrecoProduto of tabelaPrecoProdutoList" [value]="tabelaPrecoProduto.idTabelaPrecoProduto">{{tabelaPrecoProduto.nome}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <br />
+
+    <h3>Dentistas operadores
+      <button mat-mini-fab color="primary" (click)="addDentista($event)">
+        <mat-icon class="iconAdd" aria-hidden="false" fontIcon="add"></mat-icon>
+      </button>
+    </h3>
+
+    <div *ngIf="dentistaEmpresa.length != 0" class="w100">
+      <div *ngFor="let dentista of dentistaEmpresa" class="w100 inputsCentralizados">
+
+        <mat-form-field class="w50 p5 inlineFlex">
+          <mat-label>Nome</mat-label>
+          <input type="text" matInput [value]="dentista.nome" (change)="setDentistaEmpresa($event, 'nome', dentista)">
+        </mat-form-field>
+
+        <mat-form-field class="w50 p5 inlineFlex">
+          <mat-label>Email</mat-label>
+          <input type="text" matInput [value]="dentista.email" (change)="setDentistaEmpresa($event, 'email', dentista)">
+        </mat-form-field>
+
+        <mat-icon class="iconDelete" aria-hidden="false" (click)="removeDentista($event, dentista)" fontIcon="delete_forever"></mat-icon>
+      </div>
+    </div>
+
+    <h3>Informações gerais</h3>
+
+    <div class="w50">
+      <mat-slide-toggle checked={this.cadastroComplementarEmpresa?.utilizaInterfaces} (change)=toogleInterfacesTBase() >Vai utilizar nossas interfaces/T-BASE e Analogos?</mat-slide-toggle>
+    </div>
+
+    <br />
+    <div class="w50">
+      <mat-slide-toggle checked={this.cadastroComplementarEmpresa?.scannerProprio} (change)=toogleScanner() >Scanner intra oral próprio?</mat-slide-toggle>
+    </div>
+
+    <br />
+    <mat-form-field class="w100">
+      <mat-label>Desconto</mat-label>
+      <input type="number" matInput [formControl]="descontoFormControl" [errorStateMatcher]="matcher" placeholder="Preenchimento em porcentagem, por exemplo: 5%">
+      <mat-error *ngIf="descontoFormControl.hasError('descontoFormControl') && !descontoFormControl.hasError('required')">
+        Digite o desconto sob a demanda
+      </mat-error>
+    </mat-form-field>
+
+
+    <div class="areaBotoes w100">
+      <div class="esquerda">
+      </div>
+      <div class="direita">
+        <button mat-raised-button color="warn" [routerLink]="'/l/empresa/edit/' + idEmpresa">Cancelar</button>
+        <button mat-raised-button color="primary" (click)="onSubmitButton($event)">Salvar</button>
+      </div>
+    </div>
+
+  </form>
+
+</div>

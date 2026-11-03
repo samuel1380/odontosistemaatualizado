@@ -1,0 +1,106 @@
+<h2 mat-dialog-title>Registrar Pagamento por KM Rodado</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="pagamentoForm">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nome da Pessoa</mat-label>
+          <input matInput formControlName="nomePessoa">
+          <mat-error *ngIf="pagamentoForm.get('nomePessoa')?.hasError('required')">
+            Nome da pessoa é obrigatório
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Quantidade de KM</mat-label>
+          <input matInput type="number" formControlName="quantidadeKm" min="1">
+          <mat-error *ngIf="pagamentoForm.get('quantidadeKm')?.hasError('required')">
+            Quantidade de KM é obrigatória
+          </mat-error>
+          <mat-error *ngIf="pagamentoForm.get('quantidadeKm')?.hasError('min')">
+            Quantidade deve ser maior que zero
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Data do Pagamento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dataPagamento">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="pagamentoForm.get('dataPagamento')?.hasError('required')">
+            Data do pagamento é obrigatória
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Valor por KM</mat-label>
+          <input matInput [value]="configuracaoKm?.valorPorKm | currency:'BRL'" disabled>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-12 mb-3">
+        <div class="alert alert-info">
+          <strong>Valor Total Calculado:</strong> {{ valorTotal | currency:'BRL' }}
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="idCategoria">
+            <mat-option [value]="null">Selecione uma categoria</mat-option>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.idCategoria">
+              {{ categoria.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Conta</mat-label>
+          <mat-select formControlName="idConta">
+            <mat-option [value]="null">Selecione uma conta</mat-option>
+            <mat-option *ngFor="let conta of contas" [value]="conta.idConta">
+              {{ conta.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Meio de Pagamento</mat-label>
+          <mat-select formControlName="meioPagamento">
+            <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+              {{ meio.nome }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="pagamentoForm.get('meioPagamento')?.hasError('required')">
+            Meio de pagamento é obrigatório
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Observações</mat-label>
+          <textarea matInput formControlName="observacoes" rows="3"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="dialogRef.close()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
+</mat-dialog-actions>
+

@@ -1,0 +1,58 @@
+<mat-card class="mb-25 tagus-card">
+
+  <form class="cadastroParceiro" (ngSubmit)=onSubmitButton($event)>
+
+    <mat-form-field appearance="fill" class="w50 p5" *ngIf="!isLoadding">
+      <mat-label>Componente</mat-label>
+      <input type="text"
+          placeholder="Digite o nome dos componentes"
+          matInput
+          [formControl]="formControlComponentes"
+          [matAutocomplete]="auto"
+      >
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selected($event)">
+          <mat-option *ngFor="let option of filteredComponentes | async" [value]="option.nome">
+              {{option.nome}}
+          </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field class="w100  p5">
+      <mat-label>Descrição</mat-label>
+      <input type="text" matInput [formControl]="descricaoFormControl" [errorStateMatcher]="matcher">
+      <mat-error *ngIf="descricaoFormControl.hasError('descricaoFormControl') && !descricaoFormControl.hasError('required')">
+        Por favor preencha a descrição
+      </mat-error>
+      <mat-error *ngIf="descricaoFormControl.hasError('required')">
+        Descrição é <strong>requerido</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w100  p5">
+      <mat-label>Quantidade</mat-label>
+      <input type="number" matInput [formControl]="quantidadeFormControl" [errorStateMatcher]="matcher">
+      <mat-error *ngIf="quantidadeFormControl.hasError('quantidadeFormControl') && !quantidadeFormControl.hasError('required')">
+        Por favor preencha a quantidade
+      </mat-error>
+      <mat-error *ngIf="quantidadeFormControl.hasError('required')">
+        Quantidade é <strong>requerido</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w100  p5" *ngIf="hasParafuso" >
+      <mat-label>Quantidade Parafuso</mat-label>
+      <input type="number" matInput [formControl]="quantidadeParafusosFormControl" [errorStateMatcher]="matcher">
+      <mat-error *ngIf="quantidadeParafusosFormControl.hasError('quantidadeParafusosFormControl') && !quantidadeParafusosFormControl.hasError('required')">
+        Por favor preencha a quantidade
+      </mat-error>
+      <mat-error *ngIf="quantidadeParafusosFormControl.hasError('required')">
+        Quantidade é <strong>requerido</strong>
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div class="mt-5">
+    <button mat-raised-button color="warn" class="cancelar" (click)="cancelarCadastro()">Cancelar</button>
+    <button mat-flat-button (click)="onSubmitButton($event)" class="tagus">Adicionar estoque</button>
+  </div>
+</mat-card>

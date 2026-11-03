@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Imprimir recibo de pagamento</h2>
+<mat-dialog-content>
+  <p class="valor-pago">
+    <strong>Valor pago:</strong> {{ data.valorPago | currency:'BRL' }}
+  </p>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Data do pagamento</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dataPagamento">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Descrição do recebimento</mat-label>
+      <textarea
+        matInput
+        formControlName="descricao"
+        rows="3"
+        placeholder="Ex.: no cartão de crédito na Dental Globo"></textarea>
+      <mat-hint>Texto que aparecerá após "Recebemos a quantia de R$ XXX, " no recibo</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="fechar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="imprimir()" [disabled]="!form.valid" cdkFocusInitial>
+    Imprimir recibo
+  </button>
+</mat-dialog-actions>

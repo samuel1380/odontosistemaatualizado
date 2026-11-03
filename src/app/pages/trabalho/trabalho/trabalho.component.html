@@ -1,0 +1,24 @@
+<div class="listaTrabalhos">
+  <mat-card class="mb-25 tagus-card filaEspera">
+    <!-- <mat-card-header>
+      <a mat-flat-button class="default-btn tagus" (click)="criarTrabalho()">
+          <i class="ri-add-fill"></i> Add Trabalho
+      </a>
+    </mat-card-header> -->
+
+    <mat-card-content>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['PENDENTE']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['ENVIADO_PROVA']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['MODELAGEM']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['IMPRESSAO_PROVA']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['IMPRESSAO_CARGA_CERAMICA']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['IMPRESSAO_BIOSPLINT_PLACA']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['FRESAGEM']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['SINTERIZACAO']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['MAQUIAGEM']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['AGUARDANDO_COMPONENTE']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['PACOTE']"></app-trabalho-lista-trabalho>
+      <app-trabalho-lista-trabalho [statusTrabalho]="['AGUARDANDO_COLETA']"></app-trabalho-lista-trabalho>
+    </mat-card-content>
+  </mat-card>
+</div>

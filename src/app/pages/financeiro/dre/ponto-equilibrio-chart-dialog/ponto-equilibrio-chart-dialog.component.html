@@ -1,0 +1,31 @@
+<div class="modal-header bg-primary">
+  <h5 class="modal-title text-white mb-0 d-flex align-items-center">
+    <mat-icon class="me-2">show_chart</mat-icon> Ponto de Equilíbrio - {{ data.mes }}
+  </h5>
+  <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="fechar()"></button>
+</div>
+
+<div class="modal-body p-4">
+  <div class="row text-center mb-4 g-3">
+    <div class="col-sm-4 border-end">
+      <p class="text-muted mb-1 text-uppercase small font-w500">Custo Fixo</p>
+      <h4 class="mb-0 fw-bold">{{ data.custoFixo | currency:'BRL':'symbol':'1.2-2' }}</h4>
+    </div>
+    <div class="col-sm-4 border-end">
+      <p class="text-muted mb-1 text-uppercase small font-w500">Custo Variável (%)</p>
+      <h4 class="mb-0 fw-bold">{{ (data.receitaOperacional > 0 ? (data.custoVariavel / data.receitaOperacional) * 100 : 0) | number:'1.2-2' }}%</h4>
+    </div>
+    <div class="col-sm-4">
+      <p class="text-primary mb-1 text-uppercase small font-w500">Ponto de Equilíbrio</p>
+      <h4 class="mb-0 fw-bolder text-primary">{{ data.pontoEquilibrio | currency:'BRL':'symbol':'1.2-2' }}</h4>
+    </div>
+  </div>
+
+  <div class="chart-container" style="position: relative; height:400px; width:100%">
+    <canvas baseChart
+      [data]="chartData"
+      [options]="chartOptions"
+      [type]="'line'">
+    </canvas>
+  </div>
+</div>

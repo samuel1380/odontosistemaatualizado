@@ -1,0 +1,92 @@
+<h2 mat-dialog-title>Desconto por Devolução de Componentes (Fatura #{{ data.idFatura }})</h2>
+
+<mat-dialog-content>
+  <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!carregando">
+    <p class="description-text">
+      Selecione os componentes devolvidos físicos pelo cliente e suas respectivas quantidades. Opcionalmente, você pode vincular a devolução a um paciente específico que possua esse componente cobrado na fatura.
+    </p>
+
+    <form [formGroup]="form">
+      <div formArrayName="items" class="items-list-container">
+        <div *ngFor="let item of itemsFormArray.controls; let i = index" [formGroupName]="i" class="item-row d-flex align-items-center gap-3 mb-3">
+          
+          <div style="flex: 3;">
+            <mat-form-field class="w-100" appearance="outline">
+              <mat-label>Componente</mat-label>
+              <input type="text"
+                     placeholder="Pesquisar componente..."
+                     matInput
+                     [formControl]="getCompCtrl(i)"
+                     [matAutocomplete]="autoComp">
+              <button *ngIf="getCompCtrl(i).value" matSuffix mat-icon-button aria-label="Limpar" (click)="limparComponente(i)">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-autocomplete #autoComp="matAutocomplete"
+                                [displayWith]="displayNome.bind(this)"
+                                (optionSelected)="onComponenteSelected($event, i)">
+                <mat-option *ngFor="let comp of filteredComponentes[i] | async" [value]="comp">
+                  {{ comp.nome }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error *ngIf="item.get('idComponente')?.hasError('required')">Selecione um componente</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div style="flex: 3;">
+            <mat-form-field class="w-100" appearance="outline">
+              <mat-label>Paciente (Opcional)</mat-label>
+              <input type="text"
+                     placeholder="Pesquisar paciente..."
+                     matInput
+                     [formControl]="getPacCtrl(i)"
+                     [matAutocomplete]="autoPac">
+              <button *ngIf="getPacCtrl(i).value" matSuffix mat-icon-button aria-label="Limpar" (click)="limparPaciente(i)">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-autocomplete #autoPac="matAutocomplete"
+                                [displayWith]="displayNomePaciente.bind(this)"
+                                (optionSelected)="onPacienteSelected($event, i)">
+                <mat-option *ngFor="let pac of filteredPacientes[i] | async" [value]="pac">
+                  {{ pac.nomePaciente }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="qtd-field">
+            <mat-label>Quantidade</mat-label>
+            <input matInput type="number" formControlName="quantidade" min="1">
+            <mat-error *ngIf="item.get('quantidade')?.hasError('required')">Obrigatório</mat-error>
+            <mat-error *ngIf="item.get('quantidade')?.hasError('min')">Mínimo 1</mat-error>
+            <mat-error *ngIf="item.get('quantidade')?.hasError('max')">Máx. {{ obterMaxPermitido(i) }}</mat-error>
+          </mat-form-field>
+
+          <button mat-icon-button color="warn" type="button" (click)="removeItem(i)" matTooltip="Remover este item" class="btn-remove">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="actions-row mt-2">
+        <button mat-stroked-button color="primary" type="button" (click)="addItem()">
+          <mat-icon>add</mat-icon> Adicionar Componente
+        </button>
+      </div>
+    </form>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-footer">
+  <div class="total-summary-panel mr-auto" *ngIf="!carregando">
+    <span>Total Desconto por Devolução: </span>
+    <strong>{{ calcularTotalGeral() | currency:'BRL' }}</strong>
+  </div>
+  <button mat-button (click)="cancelar()" [disabled]="salvando">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando || carregando || !isFormValido()">
+    {{ salvando ? 'Salvando...' : 'Salvar Desconto' }}
+  </button>
+</mat-dialog-actions>

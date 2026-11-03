@@ -1,0 +1,90 @@
+<div class="mb-25 tagus-card">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto" style="max-width: 600px;">
+                <mat-card class="mb-25 tagus-card">
+                    <mat-card-header>
+                        <h5 class="mb-0">
+                            {{ data.tipo === 'JUROS' ? 'Lançar Juros no Empréstimo' : data.tipo === 'ACRESCIMO' ? 'Registrar Acréscimo à Dívida' : 'Registrar Pagamento do Empréstimo' }}
+                        </h5>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form [formGroup]="movimentacaoForm">
+                            <div class="row pt-2">
+                                <!-- Valor -->
+                                <div class="col-md-6 mb-3">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Valor</mat-label>
+                                        <span matTextPrefix>R$&nbsp;</span>
+                                        <input type="text" matInput formControlName="valor" (blur)="calcularValorDigitado($event)">
+                                        <mat-error *ngIf="movimentacaoForm.get('valor')?.hasError('required')">Valor é obrigatório</mat-error>
+                                        <mat-error *ngIf="movimentacaoForm.get('valor')?.hasError('min')">O valor deve ser maior que 0</mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- Data -->
+                                <div class="col-md-6 mb-3">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>{{ data.tipo === 'JUROS' ? 'Data Competência' : data.tipo === 'ACRESCIMO' ? 'Data do Acréscimo' : 'Data do Pagamento' }}</mat-label>
+                                        <input matInput [matDatepicker]="pickerData" formControlName="dataMovimentacao">
+                                        <mat-datepicker-toggle matIconSuffix [for]="pickerData"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickerData></mat-datepicker>
+                                        <mat-error *ngIf="movimentacaoForm.get('dataMovimentacao')?.hasError('required')">Data é obrigatória</mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- Conta Bancária (apenas para Pagamento e Acréscimo) -->
+                                <div class="col-md-6 mb-3" *ngIf="data.tipo === 'PAGAMENTO' || data.tipo === 'ACRESCIMO'">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Conta Bancária de Saída</mat-label>
+                                        <mat-select formControlName="idConta">
+                                            <mat-option *ngFor="let conta of contas" [value]="conta.idConta">
+                                                {{ conta.nome }} - {{ conta.banco }}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="movimentacaoForm.get('idConta')?.hasError('required')">Conta é obrigatória</mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- Meio de Pagamento (apenas para Pagamento) -->
+                                <div class="col-md-6 mb-3" *ngIf="data.tipo === 'PAGAMENTO'">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Meio de Pagamento</mat-label>
+                                        <mat-select formControlName="meioPagamento">
+                                            <mat-option *ngFor="let m of meiosPagamento" [value]="m.id">{{ m.nome }}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- Categoria DRE (apenas para Pagamento e Acréscimo) -->
+                                <div class="col-md-6 mb-3" *ngIf="data.tipo === 'PAGAMENTO' || data.tipo === 'ACRESCIMO'">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Categoria DRE</mat-label>
+                                        <mat-select formControlName="idCategoria">
+                                            <mat-option [value]="null">Nenhuma</mat-option>
+                                            <mat-option *ngFor="let cat of categorias" [value]="cat.idCategoria">
+                                                {{ cat.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Observações -->
+                                <div class="col-12 mb-3">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Observações</mat-label>
+                                        <textarea matInput formControlName="observacoes" rows="2" maxlength="255"></textarea>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                    <mat-card-actions align="end">
+                        <button mat-button (click)="fechar()" type="button">Cancelar</button>
+                        <button mat-stroked-button color="primary" type="button" class="me-2" (click)="salvar(true)" [disabled]="isSubmitting">Salvar e Criar Outra</button>
+                        <button mat-raised-button color="primary" type="button" (click)="salvar(false)" [disabled]="isSubmitting">Salvar</button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="mb-25 tagus-card">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                <mat-card class="mb-25 tagus-card">
+                    <mat-card-header>
+                        <h5 class="mb-0">Registrar Aporte</h5>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form [formGroup]="aporteForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <app-single-selection
+                                        [formControl]="idSocioControl"
+                                        [lista$]="socios$"
+                                        nomeIdentificador="idSocio"
+                                        titulo="Sócio"
+                                        placeholder="Selecione um sócio (opcional)">
+                                    </app-single-selection>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Data do Aporte</mat-label>
+                                        <input matInput [matDatepicker]="picker" formControlName="dataAporte">
+                                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Valor</mat-label>
+                                        <span matTextPrefix>R$&nbsp;</span>
+                                        <input type="number" matInput formControlName="valor" step="0.01" min="0.01">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Tipo</mat-label>
+                                        <mat-select formControlName="tipo">
+                                            <mat-option *ngFor="let tipo of tiposAporte" [value]="tipo.id">
+                                                {{ tipo.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Categoria</mat-label>
+                                        <mat-select formControlName="idCategoria">
+                                            <mat-option [value]="null">Nenhuma</mat-option>
+                                            <mat-option *ngFor="let categoria of categorias" [value]="categoria.idCategoria">
+                                                {{ categoria.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Conta</mat-label>
+                                        <mat-select formControlName="idConta">
+                                            <mat-option [value]="null">Nenhuma</mat-option>
+                                            <mat-option *ngFor="let conta of contas" [value]="conta.idConta">
+                                                {{ conta.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Meio de Pagamento</mat-label>
+                                        <mat-select formControlName="meioPagamento">
+                                            <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+                                                {{ meio.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Observações</mat-label>
+                                        <textarea matInput formControlName="observacoes" rows="3"></textarea>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                    <mat-card-actions align="end">
+                        <button mat-button (click)="dialogRef.close()">Cancelar</button>
+                        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="aporteForm.invalid">
+                            Salvar
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>
+

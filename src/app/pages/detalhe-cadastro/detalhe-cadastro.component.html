@@ -1,0 +1,262 @@
+<div class="contentCadastro">
+  <h1 mat-dialog-title>Cadastro de Parceiro</h1>
+
+  <form class="cadastroParceiro" (ngSubmit)=onSubmitButton($event)>
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Tipo de empresa</mat-label>
+        <select matNativeControl [formControl]="tipoEmpresaFormControl">
+          <option value="cirurgiao_dentista">Cirurgião Dentista</option>
+          <option value="clinica_odontologica">Clínica Odontológica</option>
+          <option value="laboratorio_protese_dentaria">Laboratório de prótese dentária</option>
+        </select>
+        <mat-error *ngIf="tipoEmpresaFormControl.hasError('email') && !tipoEmpresaFormControl.hasError('required')">
+          Selecione uma opção valida
+        </mat-error>
+        <mat-error *ngIf="tipoEmpresaFormControl.hasError('required')">
+          Tipo de empresa é <strong>requerida</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isEmpresa" class="w100 p5">
+        <mat-label>CNPJ</mat-label>
+        <input type="text" maxlength="14" minlength="14" matInput [formControl]="cnpjFormControl">
+        <mat-error *ngIf="cnpjFormControl.hasError('email') && !cnpjFormControl.hasError('required')">
+          Por favor seu CNPJ
+        </mat-error>
+        <mat-error *ngIf="cnpjFormControl.hasError('email') && !cnpjFormControl.hasError('digit')">
+          CNPJ inválido
+        </mat-error>
+        <mat-error *ngIf="cnpjFormControl.hasError('required')">
+          CNPJ é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isEmpresa" class="w50 p5">
+        <mat-label>Razão Social</mat-label>
+        <input type="text" matInput [formControl]="razaoSocialFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="razaoSocialFormControl.hasError('razaoSocialFormControl') && !razaoSocialFormControl.hasError('required')">
+          Por favor preencha a razão social
+        </mat-error>
+        <mat-error *ngIf="razaoSocialFormControl.hasError('required')">
+          Razão social é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isEmpresa" class="w50 p5">
+        <mat-label>Nome fantasia</mat-label>
+        <input type="text" matInput [formControl]="nomeFantasiaFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('nomeFantasiaFormControl') && !nomeFantasiaFormControl.hasError('required')">
+          Por favor preencha o nome fantasia
+        </mat-error>
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('required')">
+          Nome fantasia é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isPessoa" class="w50 p5">
+        <mat-label>CPF</mat-label>
+        <input type="text" maxlength="11" minlength="11" matInput [formControl]="cpfFormControl">
+        <mat-error *ngIf="cpfFormControl.hasError('email') && !cpfFormControl.hasError('required')">
+          Por favor preencha seu CPF
+        </mat-error>
+        <mat-error *ngIf="cpfFormControl.hasError('email') && !cpfFormControl.hasError('digit')">
+          CPF inválido
+        </mat-error>
+        <mat-error *ngIf="cpfFormControl.hasError('required')">
+          CPF é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isPessoa" class="w50 p5">
+        <mat-label>Nome</mat-label>
+        <input type="text" matInput [formControl]="nomeFantasiaFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('nomeFantasiaFormControl') && !nomeFantasiaFormControl.hasError('required')">
+          Por favor preencha o nome
+        </mat-error>
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('required')">
+          Nome é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w70 p5">
+        <mat-label>Responsável Técnico</mat-label>
+        <input type="text" matInput [formControl]="responsavelTecnicoFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="responsavelTecnicoFormControl.hasError('responsavelTecnicoFormControl') && !responsavelTecnicoFormControl.hasError('required')">
+          Digite o nome do responsável técnico corretamente
+        </mat-error>
+        <mat-error *ngIf="responsavelTecnicoFormControl.hasError('required')">
+          Responsável técnico é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w30 p5">
+        <mat-label>Número CRO</mat-label>
+        <input type="text" matInput [formControl]="numeroDocumentoResponsavel" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="numeroDocumentoResponsavel.hasError('numeroDocumentoResponsavel') && !numeroDocumentoResponsavel.hasError('required')">
+          Digite o nome do responsável técnico corretamente
+        </mat-error>
+        <mat-error *ngIf="numeroDocumentoResponsavel.hasError('required')">
+          Responsável técnico é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <br />
+      <hr />
+      <br />
+
+      <mat-form-field class="w30 p5">
+        <mat-label>CEP</mat-label>
+        <input type="number" matInput [formControl]="cepFormControl" [errorStateMatcher]="matcher" (keyup)=onChangeBuscaCEP() >
+        <mat-error *ngIf="cepFormControl.hasError('cepFormControl') && !cepFormControl.hasError('required')">
+          Digite CEP corretamente
+        </mat-error>
+        <mat-error *ngIf="cepFormControl.hasError('required')">
+          CEP é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w70 p5">
+        <mat-label>Logradouro</mat-label>
+        <input type="text" matInput [formControl]="logradouroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="logradouroFormControl.hasError('logradouroFormControl') && !logradouroFormControl.hasError('required')">
+          Digite logradouro corretamente
+        </mat-error>
+        <mat-error *ngIf="logradouroFormControl.hasError('required')">
+          Logradouro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Complemento</mat-label>
+        <input type="text" matInput [formControl]="complementoFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="complementoFormControl.hasError('complementoFormControl') && !complementoFormControl.hasError('required')">
+          Digite complemento corretamente
+        </mat-error>
+        <mat-error *ngIf="complementoFormControl.hasError('required')">
+          Complemento é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w40 p5">
+        <mat-label>Bairro</mat-label>
+        <input type="text" matInput [formControl]="bairroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="bairroFormControl.hasError('bairroFormControl') && !bairroFormControl.hasError('required')">
+          Digite bairro corretamente
+        </mat-error>
+        <mat-error *ngIf="bairroFormControl.hasError('required')">
+          Bairro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w30 p5">
+        <mat-label>Cidade</mat-label>
+        <input type="text" matInput [formControl]="cidadeFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="cidadeFormControl.hasError('cidadeFormControl') && !cidadeFormControl.hasError('required')">
+          Digite cidade corretamente
+        </mat-error>
+        <mat-error *ngIf="cidadeFormControl.hasError('required')">
+          Cidade é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w30 p5">
+        <mat-label>UF</mat-label>
+        <input type="text" matInput [formControl]="ufFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="ufFormControl.hasError('ufFormControl') && !ufFormControl.hasError('required')">
+          Digite UF corretamente
+        </mat-error>
+        <mat-error *ngIf="ufFormControl.hasError('required')">
+          UF é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <br />
+      <hr />
+      <br />
+<!--
+      <mat-form-field class="w100 p5">
+        <mat-label>Contato Operacional</mat-label>
+        <input type="text" matInput [formControl]="contatoOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="contatoOperacionalFormControl.hasError('contatoOperacionalFormControl') && !contatoOperacionalFormControl.hasError('required')">
+          Digite o contato operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="contatoOperacionalFormControl.hasError('required')">
+          Contato operacional é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Telefone Operacional</mat-label>
+        <input type="text" matInput [formControl]="telefoneOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="telefoneOperacionalFormControl.hasError('telefoneOperacionalFormControl') && !telefoneOperacionalFormControl.hasError('required')">
+          Digite telefone operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="telefoneOperacionalFormControl.hasError('required')">
+          Telefone operacional é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Email Operacional</mat-label>
+        <input type="text" matInput [formControl]="emailOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="emailOperacionalFormControl.hasError('emailOperacionalFormControl') && !emailOperacionalFormControl.hasError('required')">
+          Digite email operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="emailOperacionalFormControl.hasError('required')">
+          Telefone operacional email é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field> -->
+
+      <br />
+      <hr />
+      <br />
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Contato Financeiro</mat-label>
+        <input type="text" matInput [formControl]="contatoFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="contatoFinanceiroFormControl.hasError('contatoFinanceiroFormControl') && !contatoFinanceiroFormControl.hasError('required')">
+          Digite o contato financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="contatoFinanceiroFormControl.hasError('required')">
+          Contato financeiro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Telefone Financeiro</mat-label>
+        <input type="text" matInput [formControl]="telefoneFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="telefoneFinanceiroFormControl.hasError('telefoneFinanceiroFormControl') && !telefoneFinanceiroFormControl.hasError('required')">
+          Digite telefone financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="telefoneFinanceiroFormControl.hasError('required')">
+          Telefone financeiro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Email Financeiro</mat-label>
+        <input type="text" matInput [formControl]="emailFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="emailFinanceiroFormControl.hasError('emailFinanceiroFormControl') && !emailFinanceiroFormControl.hasError('required')">
+          Digite email financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="emailFinanceiroFormControl.hasError('required')">
+          Telefone financeiro email é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+
+      <div class="areaBotoes w100">
+        <div class="esquerda">
+          <button *ngIf="aprovado" mat-raised-button color="warn" (click)="desativar($event)">Desativar</button>
+          <button *ngIf="!aprovado" mat-raised-button color="primary" (click)="aprovarParceiro($event)">Aprovar</button>
+        </div>
+        <div class="direita">
+          <button mat-raised-button color="warn" [routerLink]="'/l/empresa'">Cancelar</button>
+          <button mat-raised-button color="primary" (click)="onSubmitButton($event)">Atualiza</button>
+          <button mat-raised-button color="primary" [routerLink]="'/l/empresa/cadastrocomplementar/' + idEmpresa">Cadastro Complementar</button>
+        </div>
+      </div>
+
+  </form>
+</div>

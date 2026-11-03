@@ -1,0 +1,63 @@
+<div class="mb-25 tagus-card">
+  <div class="d-table">
+    <div class="d-table-cell">
+      <div class="tagus-form ms-auto me-auto">
+        <mat-card class="mb-25 tagus-card">
+          <mat-card-header>
+            <h5 class="mb-0">Detalhes da Conciliação</h5>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="data?.conciliacao">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <strong>Data da Conciliação:</strong>
+                  <p>{{ formatarData(data.conciliacao.dataConciliacao) }}</p>
+                </div>
+                <div class="col-md-6">
+                  <strong>Tipo de Vínculo:</strong>
+                  <p>{{ data.conciliacao.tipoVinculo }}</p>
+                </div>
+              </div>
+
+              <div class="row mb-3" *ngIf="data.conciliacao.transacaoOfx">
+                <div class="col-md-12">
+                  <h6>Transação OFX</h6>
+                  <p><strong>Valor:</strong> {{ formatarValor(data.conciliacao.transacaoOfx.valor) }}</p>
+                  <p><strong>Data:</strong> {{ formatarData(data.conciliacao.transacaoOfx.dataTransacao) }}</p>
+                  <p><strong>Descrição:</strong> {{ data.conciliacao.transacaoOfx.descricao || '-' }}</p>
+                </div>
+              </div>
+
+              <div class="row mb-3" *ngIf="data.conciliacao.movimentacao">
+                <div class="col-md-12">
+                  <h6>Movimentação Vinculada</h6>
+                  <p><strong>Valor:</strong> {{ formatarValor(data.conciliacao.movimentacao.valor) }}</p>
+                  <p><strong>Data:</strong> {{ formatarData(data.conciliacao.movimentacao.dataMovimentacao) }}</p>
+                  <p><strong>Descrição:</strong> {{ data.conciliacao.movimentacao.descricao }}</p>
+                </div>
+              </div>
+
+              <div class="row mb-3" *ngIf="data.conciliacao.observacoes">
+                <div class="col-md-12">
+                  <strong>Observações:</strong>
+                  <p>{{ data.conciliacao.observacoes }}</p>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-button (click)="dialogRef.close()">Fechar</button>
+            <button 
+              mat-raised-button 
+              color="warn" 
+              (click)="desfazer()" 
+              [disabled]="carregando">
+              <span *ngIf="carregando">Desfazendo...</span>
+              <span *ngIf="!carregando">Desfazer Conciliação</span>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

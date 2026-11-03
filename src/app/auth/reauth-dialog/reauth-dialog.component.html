@@ -1,0 +1,40 @@
+<h1 mat-dialog-title class="reauth-title">Sessão expirada</h1>
+<div mat-dialog-content>
+    <p class="text-muted mb-16">
+        Digite sua senha para continuar na mesma tela. O que você estava fazendo não será perdido.
+    </p>
+    <div class="tagus-form-group without-icon mb-12">
+        <label class="d-block mb-8 fw-semibold">E-mail</label>
+        <mat-form-field appearance="fill" class="w-100">
+            <mat-label>E-mail</mat-label>
+            <input matInput type="email" [formControl]="emailControl" (keyup.enter)="submit()" />
+        </mat-form-field>
+    </div>
+    <div class="tagus-form-group without-icon">
+        <label class="d-block mb-8 fw-semibold">Senha</label>
+        <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Senha</mat-label>
+            <input
+                matInput
+                [type]="hide ? 'password' : 'text'"
+                [formControl]="senhaControl"
+                (keyup.enter)="submit()"
+            />
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hide = !hide"
+                [attr.aria-label]="'Mostrar senha'"
+            >
+                <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions align="end" class="gap-8">
+    <button mat-button type="button" (click)="sair()" [disabled]="loading">Sair e ir ao login</button>
+    <button mat-flat-button color="primary" type="button" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Entrando…' : 'Continuar' }}
+    </button>
+</div>

@@ -1,0 +1,152 @@
+<mat-card class="mb-25 tagus-card"
+  [class.component-dark-theme]="themeService.isDark()"
+  [class.card-borderd-theme]="themeService.isCardBorder()"
+  [class.card-border-radius]="themeService.isCardBorderRadius()">
+  <mat-card-header>
+    <h5 class="mb-0">Controle de Combustível</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <button mat-stroked-button
+                [class.active]="abaAtiva === 'veiculos'"
+                (click)="mudarAba('veiculos')"
+                class="me-2">
+          Veículos
+        </button>
+        <button mat-stroked-button
+                [class.active]="abaAtiva === 'abastecimentos'"
+                (click)="mudarAba('abastecimentos')">
+          Abastecimentos
+        </button>
+        <button mat-stroked-button
+                [class.active]="abaAtiva === 'pagamentos-km'"
+                (click)="mudarAba('pagamentos-km')">
+          Pagamentos KM
+        </button>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="abaAtiva === 'veiculos'">
+      <div class="col-md-12 d-flex align-items-end justify-content-end">
+        <button mat-raised-button color="primary" (click)="adicionarVeiculo()">
+          <mat-icon>add</mat-icon>
+          Adicionar Veículo
+        </button>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="abaAtiva === 'abastecimentos'">
+      <div class="col-md-4">
+        <app-single-selection
+          [formControl]="veiculoFilter"
+          [lista$]="veiculos$"
+          nomeIdentificador="idVeiculo"
+          renderName="nome"
+          titulo="Veículo"
+          placeholder="Todos os veículos">
+        </app-single-selection>
+      </div>
+      <div class="col-md-8 d-flex align-items-end justify-content-end">
+        <button mat-raised-button color="primary" (click)="adicionarAbastecimento()">
+          <mat-icon>add</mat-icon>
+          Registrar Abastecimento
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="tagus-card" *ngIf="abaAtiva === 'veiculos'">
+  <mat-card-content>
+    <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!carregando && listaVeiculos.data.length === 0" class="text-center p-4">
+      <p>Nenhum veículo encontrado.</p>
+    </div>
+
+    <div *ngIf="!carregando && listaVeiculos.data.length > 0" class="mat-elevation-z8 tagus-mat-table">
+      <table mat-table [dataSource]="listaVeiculos" class="w-100">
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome</th>
+          <td mat-cell *matCellDef="let veiculo">{{ veiculo.nome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let veiculo">
+            <button mat-icon-button color="primary" (click)="editarVeiculo(veiculo)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="excluirVeiculo(veiculo)" matTooltip="Excluir">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsVeiculosWithActions"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsVeiculosWithActions;"></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="tagus-card" *ngIf="abaAtiva === 'abastecimentos'">
+  <mat-card-content>
+    <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!carregando && listaAbastecimentos.data.length === 0" class="text-center p-4">
+      <p>Nenhum abastecimento encontrado.</p>
+    </div>
+
+    <app-listagem
+      *ngIf="!carregando && listaAbastecimentos.data.length > 0"
+      [lista]="listaAbastecimentos"
+      [columns]="displayedColumnsAbastecimentos">
+    </app-listagem>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="tagus-card" *ngIf="abaAtiva === 'pagamentos-km'">
+  <mat-card-content>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="d-flex align-items-center">
+          <span class="me-2">Valor por KM configurado:</span>
+          <strong *ngIf="configuracaoKm">{{ configuracaoKm.valorPorKm | currency:'BRL' }}</strong>
+          <span *ngIf="!configuracaoKm" class="text-muted">Não configurado</span>
+        </div>
+      </div>
+      <div class="col-md-6 d-flex align-items-end justify-content-end">
+        <button mat-stroked-button class="me-2" (click)="abrirConfiguracaoKm()">
+          <mat-icon>settings</mat-icon>
+          Configurar Valor/KM
+        </button>
+        <button mat-raised-button color="primary" (click)="adicionarPagamentoKm()">
+          <mat-icon>add</mat-icon>
+          Registrar Pagamento KM
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="carregando" class="d-flex justify-content-center p-4">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!carregando && listaPagamentosKm.data.length === 0" class="text-center p-4">
+      <p>Nenhum pagamento de KM encontrado.</p>
+    </div>
+
+    <app-listagem
+      *ngIf="!carregando && listaPagamentosKm.data.length > 0"
+      [lista]="listaPagamentosKm"
+      [columns]="displayedColumnsPagamentosKm">
+    </app-listagem>
+  </mat-card-content>
+</mat-card>
+

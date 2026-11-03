@@ -1,0 +1,75 @@
+<h1 mat-dialog-title>Importar CSV (histórico) — temporário</h1>
+<div mat-dialog-content>
+  <p class="text-muted small mb-3">
+    Cabeçalho esperado: <strong>data_lancamento</strong> (DD/MM/AA), <strong>descricao</strong> (texto),
+    <strong>valor_credito</strong> e <strong>valor_debito</strong> (decimais; vazio ou zero não gera lançamento nesse lado).
+    Na mesma linha pode haver só crédito, só débito ou ambos (dois lançamentos). Separador: <code>;</code> ou <code>,</code>.
+    A data define <strong>competência</strong>, <strong>vencimento</strong> e <strong>data do pagamento</strong> na conta escolhida (importação como já pago).
+    Alternativa legada: <strong>data</strong>, <strong>descricao</strong>, <strong>valor</strong>, <strong>tipo</strong> (C/D).
+  </p>
+  <form [formGroup]="form">
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field class="w-100">
+          <mat-label>Conta (pagamento na data do lançamento)</mat-label>
+          <mat-select formControlName="idConta" required>
+            <mat-option *ngFor="let c of contas" [value]="c.idConta">
+              {{ c.nome || ('Conta #' + c.idConta) }}
+            </mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório: cada linha importada será baixada nesta conta (saldo atualizado).</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field class="w-100">
+          <mat-label>Categoria — receitas (linhas C / crédito)</mat-label>
+          <mat-select formControlName="idCategoriaReceita">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let c of categoriasReceita" [value]="c.id">{{ c.label }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatória se o arquivo tiver linhas de crédito.</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 mb-3">
+        <mat-form-field class="w-100">
+          <mat-label>Categoria — despesas (linhas D / débito)</mat-label>
+          <mat-select formControlName="idCategoriaDespesa">
+            <mat-option [value]="null">—</mat-option>
+            <mat-option *ngFor="let c of categoriasDespesa" [value]="c.id">{{ c.label }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatória se o arquivo tiver linhas de débito.</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <label class="d-block mb-1">Arquivo CSV</label>
+        <input
+          type="file"
+          class="form-control"
+          accept=".csv"
+          [disabled]="carregando"
+          (change)="onFileSelected($event)"
+        />
+        <small *ngIf="arquivoSelecionado" class="d-block mt-1">{{ arquivoSelecionado.name }}</small>
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="dialogRef.close()" [disabled]="carregando">Cancelar</button>
+  <button
+    mat-stroked-button
+    color="warn"
+    type="button"
+    (click)="importar()"
+    [disabled]="carregando || !arquivoSelecionado || form.get('idConta')?.value == null"
+  >
+    <span *ngIf="carregando">Importando…</span>
+    <span *ngIf="!carregando">Importar</span>
+  </button>
+</div>

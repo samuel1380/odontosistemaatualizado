@@ -1,0 +1,54 @@
+.description-text
+  font-size: 13.5px
+  color: #555
+  margin-bottom: 20px
+  line-height: 1.5
+
+.items-list-container
+  max-height: 380px
+  overflow-y: auto
+  overflow-x: hidden
+  padding-right: 5px
+  margin-bottom: 15px
+
+.item-row
+  display: flex
+  align-items: flex-start
+  gap: 15px
+  width: 100%
+  overflow-x: hidden
+
+  app-single-selection
+    display: block
+    width: 100%
+
+  ::ng-deep mat-form-field:not(.qtd-field)
+    width: 100%
+
+.qtd-field
+  width: 75px
+  flex-shrink: 0
+
+.btn-remove
+  margin-top: 8px
+  flex-shrink: 0
+
+.dialog-footer
+  display: flex
+  align-items: center
+  justify-content: space-between
+  padding: 12px 24px
+
+.total-summary-panel
+  font-size: 15px
+  
+  span
+    color: #555
+  
+  strong
+    color: #1976d2
+    font-size: 17px
+    margin-left: 5px
+
+::ng-deep .mat-mdc-dialog-content
+  overflow-x: hidden !important

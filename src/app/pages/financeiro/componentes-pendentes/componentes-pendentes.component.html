@@ -1,0 +1,215 @@
+<mat-card class="mb-25 tagus-card">
+  <mat-card-header>
+    <h5 class="mb-0">Componentes Pendentes</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-4">
+        <app-single-selection
+          [formControl]="empresaFilter"
+          [lista$]="empresas$"
+          nomeIdentificador="idEmpresa"
+          titulo="Empresa"
+          placeholder="Todas as empresas">
+        </app-single-selection>
+      </div>
+      <div class="col-md-6 d-flex align-items-center gap-2 flex-wrap">
+        <button mat-raised-button color="primary" (click)="buscar()" [disabled]="loading">
+          <mat-icon>search</mat-icon>
+          Buscar
+        </button>
+        <button mat-stroked-button color="accent" (click)="imprimirRelatorio()" [disabled]="loading || (listaComponentes.data.length === 0 && listaConcluidas.data.length === 0)"
+                matTooltip="Gerar PDF com resumo por tipo de componente e pacientes">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Imprimir
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="tagus-card">
+  <mat-card-content>
+    <div *ngIf="loading" class="d-flex justify-content-center p-4">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && resumoEmpresasReposicaoPendente.length > 0" class="resumo-empresas mb-4">
+      <h6 class="mb-2">Empresas com reposição pendente de envio</h6>
+      <p class="text-muted small mb-3">
+        Clínicas com solicitação de devolução ainda não conferida (aguardando envio físico dos componentes ao laboratório).
+      </p>
+      <div class="mat-elevation-z1 tabela-empresas-wrapper">
+        <table class="tabela-empresas-resumo">
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th class="col-num">Solicitações</th>
+              <th class="col-num">Qtd. total</th>
+              <th class="col-data">1ª solicitação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of resumoEmpresasReposicaoPendente; trackBy: trackByEmpresaResumo">
+              <td>{{ e.nomeEmpresa }}</td>
+              <td class="col-num">{{ e.totalSolicitacoes }}</td>
+              <td class="col-num">{{ e.totalQuantidade }}</td>
+              <td class="col-data">{{ formatarData(e.dataPrimeiraSolicitacao ?? undefined) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && listaComponentes.data.length > 0" class="resumo-por-tipo mb-4">
+      <h6 class="mb-2">Resumo por tipo de componente</h6>
+      <p class="text-muted small mb-3">Quantidade total pendente por componente e pacientes separados por tipo.</p>
+      <mat-accordion multi="true" class="accordion-resumo">
+        <mat-expansion-panel *ngFor="let g of agrupamentosPorTipo; trackBy: trackByGrupo">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="painel-titulo-componente">
+              <span class="nome-componente">{{ g.descricao }}</span>
+              <span class="badge-total">Total: {{ g.totalQuantidade }} un.</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="ref-componente text-muted small mb-2" *ngIf="g.idReferencia">Referência catálogo: {{ g.idReferencia }}</div>
+          <table class="tabela-pacientes-por-tipo">
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Empresa</th>
+                <th class="col-qtd">Qtd.</th>
+                <th class="col-data">Entrada no controle</th>
+                <th class="col-fatura">Fatura</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let linha of g.linhas; trackBy: trackByLinha">
+                <td>{{ linha.nomePaciente }}</td>
+                <td>{{ linha.nomeEmpresa }}</td>
+                <td class="col-qtd">{{ linha.quantidade }}</td>
+                <td class="col-data">{{ formatarData(linha.dataEntradaControle ?? undefined) }}</td>
+                <td class="col-fatura">{{ linha.labelFatura }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+    <div *ngIf="!loading && listaComponentes.data.length === 0" class="text-center p-4">
+      <p>Nenhum componente pendente encontrado.</p>
+    </div>
+
+    <h6 class="mb-2" *ngIf="!loading && listaComponentes.data.length > 0">Detalhamento por solicitação</h6>
+
+    <table mat-table [dataSource]="listaComponentes" *ngIf="!loading && listaComponentes.data.length > 0" class="w-100">
+      <ng-container matColumnDef="empresa">
+        <th mat-header-cell *matHeaderCellDef>Empresa</th>
+        <td mat-cell *matCellDef="let componente">{{ getNomeEmpresa(componente) }}</td>
+      </ng-container>
+
+      <!-- Coluna Componente -->
+      <ng-container matColumnDef="componente">
+        <th mat-header-cell *matHeaderCellDef>Componente</th>
+        <td mat-cell *matCellDef="let componente">{{ getNomeComponente(componente) }}</td>
+      </ng-container>
+
+      <!-- Coluna Paciente -->
+      <ng-container matColumnDef="paciente">
+        <th mat-header-cell *matHeaderCellDef>Paciente</th>
+        <td mat-cell *matCellDef="let componente">{{ getNomePaciente(componente) }}</td>
+      </ng-container>
+
+      <!-- Coluna Quantidade -->
+      <ng-container matColumnDef="quantidade">
+        <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+        <td mat-cell *matCellDef="let componente">{{ componente.quantidadeDevolvida }}</td>
+      </ng-container>
+
+      <!-- Coluna Entrada no controle -->
+      <ng-container matColumnDef="entradaControle">
+        <th mat-header-cell *matHeaderCellDef>Entrada no controle</th>
+        <td mat-cell *matCellDef="let componente">{{ formatarData(componente.dataSolicitacao) }}</td>
+      </ng-container>
+
+      <!-- Coluna Fatura -->
+      <ng-container matColumnDef="fatura">
+        <th mat-header-cell *matHeaderCellDef>Fatura</th>
+        <td mat-cell *matCellDef="let componente">{{ formatarLabelFatura(componente) }}</td>
+      </ng-container>
+
+      <!-- Coluna Observação -->
+      <ng-container matColumnDef="observacao">
+        <th mat-header-cell *matHeaderCellDef>Observação</th>
+        <td mat-cell *matCellDef="let componente">{{ componente.observacao || '-' }}</td>
+      </ng-container>
+
+      <!-- Coluna Ações -->
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let componente">
+          <button mat-icon-button color="primary" (click)="darBaixa(componente)" 
+                  [disabled]="loading"
+                  matTooltip="Dar Baixa">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackByDevolucao"></tr>
+    </table>
+
+    <div class="mt-4" *ngIf="!loading && listaConcluidas.data.length > 0">
+      <h6 class="mb-2">Histórico de Devoluções Concluídas</h6>
+
+      <table mat-table [dataSource]="listaConcluidas" class="w-100">
+        <ng-container matColumnDef="empresa">
+          <th mat-header-cell *matHeaderCellDef>Empresa</th>
+          <td mat-cell *matCellDef="let componente">{{ getNomeEmpresa(componente) }}</td>
+        </ng-container>
+
+        <!-- Coluna Componente -->
+        <ng-container matColumnDef="componente">
+          <th mat-header-cell *matHeaderCellDef>Componente</th>
+          <td mat-cell *matCellDef="let componente">{{ getNomeComponente(componente) }}</td>
+        </ng-container>
+
+        <!-- Coluna Paciente -->
+        <ng-container matColumnDef="paciente">
+          <th mat-header-cell *matHeaderCellDef>Paciente</th>
+          <td mat-cell *matCellDef="let componente">{{ getNomePaciente(componente) }}</td>
+        </ng-container>
+
+        <!-- Coluna Quantidade -->
+        <ng-container matColumnDef="quantidade">
+          <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+          <td mat-cell *matCellDef="let componente">{{ componente.quantidadeDevolvida }}</td>
+        </ng-container>
+
+        <!-- Coluna Resolução -->
+        <ng-container matColumnDef="resolucao">
+          <th mat-header-cell *matHeaderCellDef>Devolução</th>
+          <td mat-cell *matCellDef="let componente">{{ formatarData(componente.dataConferencia) }}</td>
+        </ng-container>
+
+        <!-- Coluna Fatura -->
+        <ng-container matColumnDef="fatura">
+          <th mat-header-cell *matHeaderCellDef>Fatura</th>
+          <td mat-cell *matCellDef="let componente">{{ formatarLabelFatura(componente) }}</td>
+        </ng-container>
+
+        <!-- Coluna Observação -->
+        <ng-container matColumnDef="observacao">
+          <th mat-header-cell *matHeaderCellDef>Observação</th>
+          <td mat-cell *matCellDef="let componente">{{ componente.observacao || '-' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsConcluidas"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsConcluidas; trackBy: trackByDevolucao"></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
+

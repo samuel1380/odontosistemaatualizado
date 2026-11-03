@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Trocar Fatura</h2>
+<mat-dialog-content>
+  <p>Deseja mover esta ordem de serviço para a próxima fatura da empresa?</p>
+  <p class="info-text">
+    A ordem de serviço será movida automaticamente para a próxima fatura disponível da empresa.
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onConfirm()" 
+    cdkFocusInitial>
+    Confirmar
+  </button>
+</mat-dialog-actions>
+

@@ -1,0 +1,48 @@
+<div
+    class="mb-25 tagus-card"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.card-borderd-theme]="themeService.isCardBorder()"
+    [class.card-border-radius]="themeService.isCardBorderRadius()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="d-table">
+      <div class="d-table-cell">
+        <div class="tagus-form ms-auto me-auto">
+          <mat-card class="mb-25 tagus-card">
+            <mat-card-header>
+                <h5 class="mb-0">Cadastrar</h5>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="contasFormControl">
+                <mat-form-field class="w50 p5">
+                  <mat-label>Nome</mat-label>
+                  <input type="text" matInput formControlName="nome">
+                </mat-form-field>
+
+
+
+                <mat-form-field class="w50 p5">
+                  <mat-label>Tipo</mat-label>
+                  <mat-select matNativeControl formControlName="tipo">
+                    <mat-option *ngFor="let tipoConta of tiposConta" [value]="tipoConta.id" >{{tipoConta.nome}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="w100 p5">
+                  <mat-label>Preço</mat-label>
+                  <span matTextPrefix>R$&nbsp;</span>
+                  <input type="number" matInput formControlName="saldoInicial">
+                </mat-form-field>
+                <br />
+                <br />
+                <br />
+              </form>
+
+            </mat-card-content>
+            <button mat-flat-button class="tagus fw-semibold" color="warn"  [routerLink]="'/l/contas'">Cancelar</button>
+            <button mat-flat-button class="tagus fw-semibold" [disabled]="conta" (click)="onSubmitButton($event)">Salvar</button>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,237 @@
+<div class="mb-25 tagus-card">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                <mat-card class="mb-25 tagus-card">
+                    <mat-card-header class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ isPago ? 'Detalhes do Pagamento' : 'Pagamento' }}</h5>
+                        <button
+                            *ngIf="!isCancelado" mat-icon-button color="warn"
+                            (click)="removerParcela()"
+                            [matTooltip]="isPago ? 'Estornar Pagamento (Excluir e Subtrair da Conta)' : 'Remover Parcela'">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-card-header>
+                    <mat-card-content>
+
+                        <!-- Cabeçalho do lançamento -->
+                        <div class="mb-3 p-3 rounded" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                            <p class="mb-1 fw-semibold" style="font-size: 15px; color: #1e293b;">{{ data?.descricao }}</p>
+                            <div class="d-flex flex-wrap gap-2 mt-2" style="font-size: 12px;">
+                                <span *ngIf="data?.nomeEmpresa && !isContasAPagar" class="badge rounded-pill" style="background:#e0f2fe; color:#0369a1; font-weight:500;">
+                                    <mat-icon style="font-size:11px;width:11px;height:11px;vertical-align:middle;">business</mat-icon>
+                                    {{ data.nomeEmpresa }}
+                                </span>
+                                <span *ngIf="data?.fornecedor && isContasAPagar" class="badge rounded-pill" style="background:#e0f2fe; color:#0369a1; font-weight:500;">
+                                    <mat-icon style="font-size:11px;width:11px;height:11px;vertical-align:middle;">storefront</mat-icon>
+                                    {{ data.fornecedor }}
+                                </span>
+                                <span class="badge rounded-pill" style="background:#f1f5f9; color:#475569; font-weight:500;">
+                                    Parcela {{ data?.numeroParcela || '-' }}
+                                </span>
+                                <span class="badge rounded-pill" style="background:#f1f5f9; color:#475569; font-weight:500;">
+                                    Venc. {{ data?.dataVencimento ? (data.dataVencimento | date:'dd/MM/yyyy') : '-' }}
+                                </span>
+                                <span class="badge rounded-pill" style="background:#f1f5f9; color:#475569; font-weight:500;">
+                                    Comp. {{ data?.dataCompetencia ? (data.dataCompetencia | date:'dd/MM/yyyy') : '-' }}
+                                </span>
+                                <span class="badge rounded-pill fw-semibold" style="background:#dcfce7; color:#166534;">
+                                    {{ data?.valorTotal | currency:'BRL' }}
+                                </span>
+                                <span class="badge rounded-pill" style="background:#f1f5f9; color:#475569; font-weight:500;">
+                                    {{ nomeMeioPagamento }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Classificação editável -->
+                        <div class="mb-3" *ngIf="!isCancelado" [formGroup]="classificacaoForm">
+                            <h6 class="mb-2">Classificação</h6>
+                            <p class="text-muted small mb-2">
+                                <ng-container *ngIf="isPago">Categoria, subcategoria e fornecedor/cliente podem ser ajustados.</ng-container>
+                                <ng-container *ngIf="!isPago">Defina categoria, subcategoria e fornecedor/cliente; ao salvar, serão gravados junto com o registro de pagamento.</ng-container>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Categoria*</mat-label>
+                                        <mat-select formControlName="idCategoriaPai">
+                                            <mat-option *ngFor="let c of categoriasPaiFiltradas" [value]="c.idCategoria">
+                                                {{ c.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="classificacaoForm.get('idCategoriaPai')?.hasError('required')">
+                                            Selecione a categoria.
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6" *ngIf="subcategoriasDaCategoria.length > 0">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Subcategoria</mat-label>
+                                        <mat-select formControlName="idSubcategoria">
+                                            <mat-option [value]="null">— Mesma categoria</mat-option>
+                                            <mat-option *ngFor="let s of subcategoriasDaCategoria" [value]="s.idCategoria">
+                                                {{ s.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6" *ngIf="isContasAPagar">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Fornecedor</mat-label>
+                                        <mat-select formControlName="idFornecedor">
+                                            <mat-option [value]="null">Nenhum</mat-option>
+                                            <mat-option *ngFor="let f of listaFornecedores" [value]="f.idFornecedor">
+                                                {{ f.nomeFantasia || f.razaoSocial }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6" *ngIf="!isContasAPagar">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Cliente (empresa)</mat-label>
+                                        <mat-select formControlName="idClienteFornecedor">
+                                            <mat-option [value]="null">Nenhum</mat-option>
+                                            <mat-option *ngFor="let c of listaClientes" [value]="c.idEmpresa">
+                                                {{ c.nomeFantasia || c.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="mb-3" *ngIf="!isCancelado">
+
+                        <!-- Cabeçalho seção pagamento -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">{{ isPago ? 'Dados da parcela' : 'Registrar pagamento' }}</h6>
+                            <button *ngIf="!isPago && !isCancelado && data?.idFatura" mat-stroked-button color="primary" type="button" (click)="abrirDetalhesFatura()">
+                                <mat-icon>receipt_long</mat-icon> Pagamento Detalhado (Por Paciente)
+                            </button>
+                        </div>
+
+                        <!-- Pagamentos já realizados (parcial) -->
+                        <div *ngIf="data?.valorPago > 0" class="mb-3 p-3 rounded" style="background-color: #f0f9ff; border: 1px solid #bde0fe;">
+                            <div class="d-flex align-items-center mb-2" style="color: #0369a1; font-size: 13px; font-weight: 600;">
+                                <mat-icon style="font-size: 16px; width: 16px; height: 16px; margin-right: 6px;">payments</mat-icon>
+                                Pagamentos realizados
+                            </div>
+
+                            <!-- Histórico detalhado (se disponível) -->
+                            <ul *ngIf="pagamentosHistorico.length > 0" class="list-unstyled mb-2" style="font-size: 13px;">
+                                <li *ngFor="let pag of pagamentosHistorico" class="d-flex justify-content-between border-bottom pb-1 mb-1">
+                                    <span>
+                                        <mat-icon style="font-size: 13px; width: 13px; height: 13px; vertical-align: text-bottom;" class="text-success me-1">check_circle</mat-icon>
+                                        {{ pag.dataMovimentacao | date:'dd/MM/yyyy HH:mm' }}
+                                    </span>
+                                    <strong>{{ pag.valorTotalCalculado | currency:'BRL' }}</strong>
+                                </li>
+                            </ul>
+
+                            <!-- Totais -->
+                            <div class="d-flex justify-content-between pt-1" style="font-size: 13px; border-top: 1px solid #bde0fe;">
+                                <span style="color: #0369a1; font-weight: 600;">Total pago</span>
+                                <span style="color: #0369a1; font-weight: 700;">{{ data.valorPago | currency:'BRL' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1" style="font-size: 12px; color: #64748b;">
+                                <span>Saldo restante</span>
+                                <span>{{ (data.valor - data.valorPago) | currency:'BRL' }}</span>
+                            </div>
+                        </div>
+
+                        <form [formGroup]="lancamentoForm" class="parcela-form">
+                            <!-- Valores da parcela (contas a pagar) -->
+                            <div class="row mb-2" *ngIf="isContasAPagar">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Data de vencimento</mat-label>
+                                        <input matInput formControlName="dataVencimento">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>{{ rotuloValorCampoParcela }}</mat-label>
+                                        <span matTextPrefix>R$&nbsp;</span>
+                                        <input type="number" matInput formControlName="valor">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <!-- Valores da parcela (contas a receber) -->
+                            <div class="row mb-2" *ngIf="!isContasAPagar">
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Data de vencimento</mat-label>
+                                        <input matInput formControlName="dataVencimento">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>{{ rotuloValorCampoParcela }}</mat-label>
+                                        <span matTextPrefix>R$&nbsp;</span>
+                                        <input type="number" matInput formControlName="valor">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Acréscimo (juros/multa)</mat-label>
+                                        <span matTextPrefix>R$&nbsp;</span>
+                                        <input type="number" matInput formControlName="acrescimo" step="0.01" min="0">
+                                        <mat-error *ngIf="lancamentoForm.get('acrescimo')?.hasError('min')">
+                                            Não pode ser negativo.
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <!-- Pagamento -->
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Meio de pagamento</mat-label>
+                                        <mat-select formControlName="meioPagamento">
+                                            <mat-option *ngFor="let meio of meiosPagamento" [value]="meio.id">
+                                                {{ meio.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Conta</mat-label>
+                                        <mat-select formControlName="idConta">
+                                            <mat-option *ngFor="let conta of listaContas" [value]="conta.idConta">
+                                                {{ conta.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100" appearance="outline">
+                                        <mat-label>Data do pagamento</mat-label>
+                                        <input matInput [matDatepicker]="pickerPagamento" formControlName="dataPagamento">
+                                        <mat-datepicker-toggle matIconSuffix [for]="pickerPagamento"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickerPagamento></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                    <mat-card-actions align="end">
+                        <button mat-button type="button" (click)="dialogRef.close()">Cancelar</button>
+                        <button
+                            *ngIf="!isCancelado"
+                            mat-raised-button
+                            color="primary"
+                            type="button"
+                            (click)="salvar()"
+                            [disabled]="salvando || !podeSalvar">
+                            Salvar
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

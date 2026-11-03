@@ -1,0 +1,75 @@
+<div
+  class="mb-25 tagus-card"
+  [class.component-dark-theme]="themeService.isDark()"
+  [class.card-borderd-theme]="themeService.isCardBorder()"
+  [class.card-border-radius]="themeService.isCardBorderRadius()"
+  [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+  <div class="d-table">
+    <div class="d-table-cell">
+      <div class="tagus-form ms-auto me-auto">
+        <mat-card class="mb-25 tagus-card">
+          <mat-card-header>
+            <h5 class="mb-0">{{ isEditMode ? 'Editar' : 'Cadastrar' }} Associação Empresa-Tabela de Preço</h5>
+          </mat-card-header>
+          <mat-card-content>
+            <form>
+              <mat-form-field class="w100 p5">
+                <mat-label>Empresa</mat-label>
+                <mat-select [formControl]="empresaFormControl" [disabled]="isEditMode">
+                  <mat-option *ngFor="let empresa of empresas" [value]="empresa.idEmpresa">
+                    {{ empresa.nomeFantasia || empresa.nome }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="empresaFormControl.hasError('required')">
+                  Empresa é <strong>obrigatória</strong>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field class="w100 p5">
+                <mat-label>Tabela de Preço</mat-label>
+                <mat-select [formControl]="tabelaPrecoFormControl">
+                  <mat-option *ngFor="let tabela of tabelasDisponiveis" [value]="tabela.idTabelaPrecoProduto">
+                    {{ tabela.nome }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="tabelaPrecoFormControl.hasError('required')">
+                  Tabela de preço é <strong>obrigatória</strong>
+                </mat-error>
+              </mat-form-field>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <mat-form-field class="w100 p5">
+                    <mat-label>Data de Início</mat-label>
+                    <input matInput [matDatepicker]="pickerInicio" [formControl]="dataInicioFormControl">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerInicio></mat-datepicker>
+                    <mat-error *ngIf="dataInicioFormControl.hasError('required')">
+                      Data de início é <strong>obrigatória</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field class="w100 p5">
+                    <mat-label>Data de Fim (Opcional)</mat-label>
+                    <input matInput [matDatepicker]="pickerFim" [formControl]="dataFimFormControl" (dateChange)="validarDatas()">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerFim"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerFim></mat-datepicker>
+                    <mat-error *ngIf="dataFimFormControl.hasError('dataInvalida')">
+                      Data de fim deve ser maior que a data de início
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+          </mat-card-content>
+          <div class="d-flex gap-2 p-3">
+            <button mat-flat-button class="tagus fw-semibold" color="warn" [routerLink]="'/l/empresa-tabela-preco'">Cancelar</button>
+            <button mat-flat-button class="tagus fw-semibold" (click)="onSubmitButton($event)">Salvar</button>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

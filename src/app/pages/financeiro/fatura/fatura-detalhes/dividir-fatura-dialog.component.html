@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Dividir Fatura #{{ data.fatura.idFatura }}</h2>
+<mat-dialog-content>
+  <p>Selecione quais ordens de serviço (trabalhos) deseja mover para uma nova fatura bifurcada.</p>
+  
+  <div style="margin-bottom: 20px; margin-top: 15px;">
+    <mat-form-field appearance="outline" style="width: 100%;">
+      <mat-label>Descrição / Identificação do Destinatário</mat-label>
+      <input matInput [(ngModel)]="descricao" placeholder="Ex: Clínica B / Repasse Dr. John" required>
+      <mat-hint>Identifica quem vai receber/pagar esta fatura bifurcada</mat-hint>
+    </mat-form-field>
+  </div>
+
+  <h5 style="margin-top: 20px; margin-bottom: 10px;">Selecione os trabalhos para mover:</h5>
+  
+  <div style="max-height: 250px; overflow-y: auto; border: 1px solid #e0e0e0; padding: 10px; border-radius: 4px;">
+    <div *ngFor="let os of data.fatura.ordensDeServico" style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+      <mat-checkbox [(ngModel)]="trabalhosSelecionados[os.idOrdemServico]" style="margin-right: 10px;">
+        <strong>Trabalho #{{ os.idTrabalho }}</strong> - Paciente: {{ os.trabalho.nomePaciente }} 
+        <span style="color: #666; margin-left: 5px;">({{ os.valorTotal | currency:'BRL' }})</span>
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <div *ngIf="selectedCount === 0" style="color: #f44336; margin-top: 10px; font-size: 13px;">
+    * Selecione pelo menos 1 trabalho para realizar a divisão.
+  </div>
+  <div *ngIf="selectedCount > 0 && selectedCount === totalOrdensCount" style="color: #f44336; margin-top: 10px; font-size: 13px;">
+    * Não é possível mover todos os trabalhos. Pelo menos 1 deve permanecer na fatura original.
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="!isValid()" (click)="onConfirm()">Dividir</button>
+</mat-dialog-actions>

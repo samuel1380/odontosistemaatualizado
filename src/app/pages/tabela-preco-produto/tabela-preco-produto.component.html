@@ -1,0 +1,80 @@
+<mat-card class="mb-25 tagus-card">
+  <mat-card-header>
+    <h5 class="mb-0">Tabelas de Preço</h5>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="tabelasComVersoes.length === 0" class="text-center p-4">
+      <p>Nenhuma tabela de preço cadastrada.</p>
+    </div>
+
+    <mat-accordion *ngIf="tabelasComVersoes.length > 0">
+      <mat-expansion-panel *ngFor="let tabela of tabelasComVersoes">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <div>
+                <strong>{{ tabela.nome }} - </strong>
+              </div>
+              <div>
+                <span class="tabela-status" [ngClass]="{
+                  'status-vigente': calcularStatus(tabela) === 'Ativa',
+                  'status-expirada': calcularStatus(tabela) === 'Inativa'
+                }">
+                  - {{ calcularStatus(tabela) }}
+                </span>
+              </div>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="d-flex align-items-center" style="gap: 0.5rem;" (click)="$event.stopPropagation()">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="abrirDetalhesCadastro(tabela)"
+                matTooltip="Editar Tabela Matriz">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="criarNovaVersao($event, tabela)"
+                matTooltip="Nova Versão">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="p-3">
+          <div *ngIf="tabela.versoes && tabela.versoes.length > 0" class="mt-3">
+            <h6 class="mb-2">Versões:</h6>
+            <div class="versoes-container">
+              <mat-card
+                *ngFor="let versao of tabela.versoes"
+                class="versao-card"
+                (click)="abrirEdicaoVersao(versao)">
+                <mat-card-content class="p-2">
+                  <div class="d-flex justify-content-between align-items-center versao-content">
+                    <div class="d-flex align-items-center gap-2">
+                      <strong>Versão {{ versao.numeroVersao || 'N/A' }}</strong>
+                    </div>
+                    <span class="versao-status" [ngClass]="{
+                      'status-vigente': calcularStatusVersao(versao) === 'Ativa',
+                      'status-expirada': calcularStatusVersao(versao) === 'Inativa'
+                    }">
+                      {{ calcularStatusVersao(versao) }}
+                    </span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>
+
+<button class="buttonAdd" mat-fab color="primary" (click)="abrirCadastro()">
+  <mat-icon>add</mat-icon>
+</button>

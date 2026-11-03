@@ -1,0 +1,18 @@
+<div class="lista" *ngIf="listaParceiros.length != 0">
+  <mat-card class="cardList m5" *ngFor="let parceiro of listaParceiros" (click)="abrirDetalhesCadastro(parceiro.idEmpresa)">
+    <mat-card-content>{{parceiro.nome}}</mat-card-content>
+    <mat-card-content>
+      <p>{{parceiro.email}}</p>
+      <!-- <p matListItemLine class="demo-2">Data Cadastro: {{parceiro.dataInclusao}}</p> -->
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div class="semDados" *ngIf="listaParceiros.length == 0">
+  <h2>Nenhum parceiro para aprovação</h2>
+</div>
+
+
+<button class="buttonAdd" mat-fab color="primary" (click)="abrirCadastro()">
+  <mat-icon>add</mat-icon>
+</button>

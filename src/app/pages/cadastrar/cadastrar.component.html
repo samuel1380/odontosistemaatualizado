@@ -1,0 +1,410 @@
+<div class="contentCadastro">
+  <h1 mat-dialog-title>Cadastro de Parceiro</h1>
+
+  <form class="cadastroParceiro" (ngSubmit)=onSubmitButton($event)>
+
+    <h3>Informações gerais</h3>
+
+    <mat-form-field class="w100 p5">
+      <mat-label>Tipo de empresa</mat-label>
+      <mat-select matNativeControl [formControl]="tipoEmpresaFormControl" (selectionChange)="onChangeTipoEmpresa()">
+        <mat-option value="cirurgiao_dentista">Cirurgião Dentista</mat-option>
+          <mat-option value="clinica_odontologica">Clínica Odontológica</mat-option>
+          <mat-option value="laboratorio_protese_dentaria">Laboratório de prótese dentária</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+      <mat-form-field *ngIf="isEmpresa" class="w50 p5">
+        <mat-label>CNPJ</mat-label>
+        <input type="text" maxlength="14" minlength="14" matInput [formControl]="cnpjFormControl">
+        <mat-error *ngIf="cnpjFormControl.hasError('email') && !cnpjFormControl.hasError('required')">
+          Por favor seu CNPJ
+        </mat-error>
+        <mat-error *ngIf="cnpjFormControl.hasError('email') && !cnpjFormControl.hasError('digit')">
+          CNPJ inválido
+        </mat-error>
+        <mat-error *ngIf="cnpjFormControl.hasError('required')">
+          CNPJ é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="isEmpresa" class="w50 p5">
+        <mat-label>Razão Social</mat-label>
+        <input type="text" matInput [formControl]="razaoSocialFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="razaoSocialFormControl.hasError('razaoSocialFormControl') && !razaoSocialFormControl.hasError('required')">
+          Por favor preencha a razão social
+        </mat-error>
+        <mat-error *ngIf="razaoSocialFormControl.hasError('required')">
+          Razão social é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field> -->
+
+      <mat-form-field *ngIf="isEmpresa" class="w50 p5">
+        <mat-label>Nome fantasia</mat-label>
+        <input type="text" matInput [formControl]="nomeFantasiaFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('nomeFantasiaFormControl') && !nomeFantasiaFormControl.hasError('required')">
+          Por favor preencha o nome fantasia
+        </mat-error>
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('required')">
+          Nome fantasia é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isPessoa" class="w50 p5">
+        <mat-label>CPF</mat-label>
+        <input type="text" maxlength="11" minlength="11" matInput [formControl]="cpfFormControl">
+        <mat-error *ngIf="cpfFormControl.hasError('email') && !cpfFormControl.hasError('required')">
+          Por favor preencha seu CPF
+        </mat-error>
+        <mat-error *ngIf="cpfFormControl.hasError('email') && !cpfFormControl.hasError('digit')">
+          CPF inválido
+        </mat-error>
+        <mat-error *ngIf="cpfFormControl.hasError('required')">
+          CPF é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isPessoa" class="w50 p5">
+        <mat-label>Nome</mat-label>
+        <input type="text" matInput [formControl]="nomeFantasiaFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('nomeFantasiaFormControl') && !nomeFantasiaFormControl.hasError('required')">
+          Por favor preencha o nome
+        </mat-error>
+        <mat-error *ngIf="nomeFantasiaFormControl.hasError('required')">
+          Nome é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Email</mat-label>
+        <input matInput [formControl]="emailOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="emailOperacionalFormControl.hasError('emailOperacionalFormControl') && !emailOperacionalFormControl.hasError('required')">
+          Digite email operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="emailOperacionalFormControl.hasError('required')">
+          Telefone operacional email é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- <mat-form-field class="w70 p5">
+        <mat-label>Responsável Técnico</mat-label>
+        <input type="text" matInput [formControl]="responsavelTecnicoFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="responsavelTecnicoFormControl.hasError('responsavelTecnicoFormControl') && !responsavelTecnicoFormControl.hasError('required')">
+          Digite o nome do responsável técnico corretamente
+        </mat-error>
+        <mat-error *ngIf="responsavelTecnicoFormControl.hasError('required')">
+          Responsável técnico é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field> -->
+
+      <!-- <mat-form-field class="w30 p5">
+        <mat-label>Número CRO</mat-label>
+        <input type="text" matInput [formControl]="numeroDocumentoResponsavel" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="numeroDocumentoResponsavel.hasError('numeroDocumentoResponsavel') && !numeroDocumentoResponsavel.hasError('required')">
+          Digite o nome do responsável técnico corretamente
+        </mat-error>
+        <mat-error *ngIf="numeroDocumentoResponsavel.hasError('required')">
+          Responsável técnico é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field> -->
+
+      <br />
+      <hr />
+      <h3>Endereço</h3>
+      <br />
+
+      <mat-form-field class="w30 p5">
+        <mat-label>CEP</mat-label>
+        <input type="text" matInput [formControl]="cepFormControl" [errorStateMatcher]="matcher" (keyup)=onChangeBuscaCEP() >
+        <mat-error *ngIf="cepFormControl.hasError('cepFormControl') && !cepFormControl.hasError('required')">
+          Digite CEP corretamente
+        </mat-error>
+        <mat-error *ngIf="cepFormControl.hasError('required')">
+          CEP é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w70 p5">
+        <mat-label>Logradouro</mat-label>
+        <input type="text" matInput [formControl]="logradouroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="logradouroFormControl.hasError('logradouroFormControl') && !logradouroFormControl.hasError('required')">
+          Digite logradouro corretamente
+        </mat-error>
+        <mat-error *ngIf="logradouroFormControl.hasError('required')">
+          Logradouro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Complemento</mat-label>
+        <input type="text" matInput [formControl]="complementoFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="complementoFormControl.hasError('complementoFormControl') && !complementoFormControl.hasError('required')">
+          Digite complemento corretamente
+        </mat-error>
+        <mat-error *ngIf="complementoFormControl.hasError('required')">
+          Complemento é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w40 p5">
+        <mat-label>Bairro</mat-label>
+        <input type="text" matInput [formControl]="bairroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="bairroFormControl.hasError('bairroFormControl') && !bairroFormControl.hasError('required')">
+          Digite bairro corretamente
+        </mat-error>
+        <mat-error *ngIf="bairroFormControl.hasError('required')">
+          Bairro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w30 p5">
+        <mat-label>Cidade</mat-label>
+        <input type="text" matInput [formControl]="cidadeFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="cidadeFormControl.hasError('cidadeFormControl') && !cidadeFormControl.hasError('required')">
+          Digite cidade corretamente
+        </mat-error>
+        <mat-error *ngIf="cidadeFormControl.hasError('required')">
+          Cidade é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w30 p5">
+        <mat-label>UF</mat-label>
+        <input type="text" matInput [formControl]="ufFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="ufFormControl.hasError('ufFormControl') && !ufFormControl.hasError('required')">
+          Digite UF corretamente
+        </mat-error>
+        <mat-error *ngIf="ufFormControl.hasError('required')">
+          UF é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <br />
+      <hr />
+      <h3>Configurações</h3>
+      <br />
+
+      <!-- Seção de Tabelas de Preço com Vigência -->
+      <div *ngIf="idEmpresa" class="w100">
+        <h3>
+          Tabelas de Preço
+          <button type="button" mat-mini-fab color="primary" (click)="abrirFormularioNovaAssociacao($event)" matTooltip="Nova Associação">
+            <mat-icon class="iconAdd" aria-hidden="false" fontIcon="add"></mat-icon>
+          </button>
+        </h3>
+
+        <!-- Formulário de Nova/Edição Associação -->
+        <div *ngIf="mostrarFormularioNovaAssociacao" class="w100 p-3 mb-3" style="border: 1px solid #e0e0e0; border-radius: 4px; background-color: #f5f5f5;">
+          <h4>{{ associacaoEditando ? 'Editar' : 'Nova' }} Associação de Tabela de Preço</h4>
+
+          <mat-form-field class="w50 p5">
+            <mat-label>Tabela de Preço</mat-label>
+            <mat-select [formControl]="novaAssociacaoTabelaPrecoFormControl">
+              <mat-option *ngFor="let tabela of tabelasDisponiveis" [value]="tabela.idTabelaPrecoProduto">
+                {{ tabela.nome }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="novaAssociacaoTabelaPrecoFormControl.hasError('required')">
+              Tabela de preço é <strong>obrigatória</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field class="w100 p5">
+                <mat-label>Data de Início</mat-label>
+                <input matInput [matDatepicker]="pickerInicioAssoc" [formControl]="novaAssociacaoDataInicioFormControl">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerInicioAssoc"></mat-datepicker-toggle>
+                <mat-datepicker #pickerInicioAssoc></mat-datepicker>
+                <mat-error *ngIf="novaAssociacaoDataInicioFormControl.hasError('required')">
+                  Data de início é <strong>obrigatória</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field class="w100 p5">
+                <mat-label>Data de Fim (Opcional)</mat-label>
+                <input matInput [matDatepicker]="pickerFimAssoc" [formControl]="novaAssociacaoDataFimFormControl" (dateChange)="validarDatasAssociacao()">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerFimAssoc"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFimAssoc></mat-datepicker>
+                <mat-error *ngIf="novaAssociacaoDataFimFormControl.hasError('dataInvalida')">
+                  Data de fim deve ser maior que a data de início
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2" style="margin-top: 10px;">
+            <button type="button" mat-raised-button color="primary" (click)="salvarAssociacaoTabelaPreco($event)">Salvar</button>
+            <button type="button" mat-raised-button color="warn" (click)="cancelarFormularioAssociacao($event)">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Lista de Associações Existentes -->
+        <div *ngIf="associacoesTabelaPreco.length > 0" class="w100 mb-3">
+          <div *ngFor="let associacao of associacoesTabelaPreco" class="w100 p-3 mb-2" style="border: 1px solid #e0e0e0; border-radius: 4px;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1">
+                <strong>{{ associacao.tabelaPrecoProduto?.nome || 'N/A' }}</strong>
+                <span *ngIf="associacao.tabelaPrecoProduto?.numeroVersao" class="versao-badge">
+                  (Versão {{ associacao.tabelaPrecoProduto.numeroVersao }})
+                </span>
+                <br>
+                <small>
+                  <strong>Período:</strong> {{ formatarDataAssociacao(associacao.dataInicio) }}
+                  <span *ngIf="associacao.dataFim"> até {{ formatarDataAssociacao(associacao.dataFim) }}</span>
+                  <span *ngIf="!associacao.dataFim"> - Vigente indefinidamente</span>
+                </small>
+                <br>
+                <ng-container *ngIf="calcularStatusAssociacao(associacao) as status">
+                  <span class="status-badge" [ngClass]="{
+                    'status-vigente': status === 'Vigente',
+                    'status-vencendo': status.includes('Vence em') || status === 'Vence hoje',
+                    'status-expirada': status === 'Expirada',
+                    'status-futura': status === 'Futura'
+                  }">
+                    {{ status }}
+                  </span>
+                </ng-container>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" mat-icon-button color="primary" (click)="abrirFormularioEditarAssociacao(associacao, $event)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button type="button" mat-icon-button color="warn" (click)="removerAssociacaoTabelaPreco(associacao, $event)" matTooltip="Desativar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensagem quando não há associações -->
+        <div *ngIf="associacoesTabelaPreco.length === 0 && !mostrarFormularioNovaAssociacao" class="w100 p-3 mb-3" style="border: 1px dashed #ccc; border-radius: 4px; text-align: center; color: #666;">
+          <p>Nenhuma associação de tabela de preço cadastrada. Clique no botão "+" para adicionar uma nova.</p>
+        </div>
+      </div>
+
+      <!-- Campo legado de tabela de preço (mantido para compatibilidade, mas não obrigatório) -->
+      <div *ngIf="!idEmpresa" class="w100">
+        <mat-form-field class="w50 p5">
+          <mat-label>Tabela de Preço (Padrão)</mat-label>
+          <mat-select matNativeControl [formControl]="tabelaDePrecoProdutoFormControl">
+            <mat-option *ngFor="let tabelaPrecoProduto of tabelaPrecoProdutoList" [value]="tabelaPrecoProduto.idTabelaPrecoProduto">{{tabelaPrecoProduto.nome}}</mat-option>
+          </mat-select>
+          <mat-hint>Este campo será usado apenas se não houver associações específicas com vigência</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <br />
+
+      <h3>Dentistas operadores
+        <button mat-mini-fab color="primary" (click)="addDentista($event)">
+          <mat-icon class="iconAdd" aria-hidden="false" fontIcon="add"></mat-icon>
+        </button>
+      </h3>
+
+      <div *ngIf="dentistaEmpresa.length != 0" class="w100">
+        <div *ngFor="let dentista of dentistaEmpresa" class="w100 inputsCentralizados">
+
+          <mat-form-field class="w50 p5 inlineFlex">
+            <mat-label>Nome</mat-label>
+            <input type="text" matInput [value]="dentista.nome" (change)="setDentistaEmpresa($event, 'nome', dentista)">
+          </mat-form-field>
+
+          <mat-form-field class="w50 p5 inlineFlex">
+            <mat-label>Email</mat-label>
+            <input type="text" matInput [value]="dentista.email" (change)="setDentistaEmpresa($event, 'email', dentista)">
+          </mat-form-field>
+
+          <mat-icon class="iconDelete" aria-hidden="false" (click)="removeDentista($event, dentista)" fontIcon="delete_forever"></mat-icon>
+        </div>
+      </div>
+
+      <h3>Informações gerais</h3>
+
+      <div class="w50">
+        <mat-slide-toggle [formControl]="interfacesTBaseFormControl" >Vai utilizar nossas interfaces/T-BASE e Analogos?</mat-slide-toggle>
+      </div>
+
+      <br />
+      <div class="w50">
+        <mat-slide-toggle  [formControl]="scannerProprioFormControl" >Scanner intra oral próprio?</mat-slide-toggle>
+      </div>
+
+      <br />
+      <mat-form-field class="w100">
+        <mat-label>Desconto</mat-label>
+        <input type="number" matInput [formControl]="descontoFormControl" [errorStateMatcher]="matcher" placeholder="Preenchimento em porcentagem, por exemplo: 5%">
+        <mat-error *ngIf="descontoFormControl.hasError('descontoFormControl') && !descontoFormControl.hasError('required')">
+          Digite o desconto sob a demanda
+        </mat-error>
+      </mat-form-field>
+<!--
+      <mat-form-field class="w100 p5">
+        <mat-label>Contato Operacional</mat-label>
+        <input type="text" matInput [formControl]="contatoOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="contatoOperacionalFormControl.hasError('contatoOperacionalFormControl') && !contatoOperacionalFormControl.hasError('required')">
+          Digite o contato operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="contatoOperacionalFormControl.hasError('required')">
+          Contato operacional é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Telefone Operacional</mat-label>
+        <input type="text" matInput [formControl]="telefoneOperacionalFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="telefoneOperacionalFormControl.hasError('telefoneOperacionalFormControl') && !telefoneOperacionalFormControl.hasError('required')">
+          Digite telefone operacional corretamente
+        </mat-error>
+        <mat-error *ngIf="telefoneOperacionalFormControl.hasError('required')">
+          Telefone operacional é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field> -->
+
+      <br />
+      <hr />
+      <br />
+
+      <mat-form-field class="w100 p5">
+        <mat-label>Contato Financeiro</mat-label>
+        <input type="text" matInput [formControl]="contatoFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="contatoFinanceiroFormControl.hasError('contatoFinanceiroFormControl') && !contatoFinanceiroFormControl.hasError('required')">
+          Digite o contato financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="contatoFinanceiroFormControl.hasError('required')">
+          Contato financeiro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Telefone Financeiro</mat-label>
+        <input type="text" matInput [formControl]="telefoneFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="telefoneFinanceiroFormControl.hasError('telefoneFinanceiroFormControl') && !telefoneFinanceiroFormControl.hasError('required')">
+          Digite telefone financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="telefoneFinanceiroFormControl.hasError('required')">
+          Telefone financeiro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w50 p5">
+        <mat-label>Email Financeiro</mat-label>
+        <input type="email" email matInput [formControl]="emailFinanceiroFormControl" [errorStateMatcher]="matcher">
+        <mat-error *ngIf="emailFinanceiroFormControl.hasError('emailFinanceiroFormControl') && !emailFinanceiroFormControl.hasError('required')">
+          Digite email financeiro corretamente
+        </mat-error>
+        <mat-error *ngIf="emailFinanceiroFormControl.hasError('required')">
+          Email financeiro é <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+
+      <div class="areaBotoes w100">
+        <button mat-raised-button color="warn" class="cancelar" [routerLink]="'/'">Cancelar</button>
+        <button mat-raised-button color="primary" (click)="onSubmitButton($event)">Cadastrar</button>
+      </div>
+
+  </form>
+</div>

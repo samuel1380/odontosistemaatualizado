@@ -1,0 +1,58 @@
+<div class="mb-25 tagus-card">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto" style="max-width: 1000px; width: 100%; min-width: 800px;">
+                <mat-card class="mb-25 tagus-card">
+                    <mat-card-header class="d-flex justify-content-between align-items-center w-100 mb-3">
+                        <h5 class="mb-0">Empréstimo #{{ data.emp.idEmprestimo }} - Valor Original: {{ data.emp.valorPrincipal | currency:'BRL' }}</h5>
+                        <div class="d-print-none">
+                            <button mat-raised-button color="accent" (click)="abrirLancamentoMovimentacao('ACRESCIMO')" class="me-2">+ Acréscimo</button>
+                            <button mat-raised-button color="warn" (click)="abrirLancamentoMovimentacao('JUROS')" class="me-2">+ Juros</button>
+                            <button mat-raised-button color="primary" (click)="abrirLancamentoMovimentacao('PAGAMENTO')">Pagamento</button>
+                        </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div *ngIf="carregando" class="py-3 text-center">Carregando...</div>
+                        <p *ngIf="!carregando && movimentacoes.data.length === 0" class="text-muted text-center py-3">
+                            Nenhuma movimentação registrada.
+                        </p>
+                        <div style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                            <table mat-table [dataSource]="movimentacoes" *ngIf="!carregando && movimentacoes.data.length > 0" class="w-100">
+                                <ng-container matColumnDef="dataMovimentacao">
+                                    <th mat-header-cell *matHeaderCellDef>Data</th>
+                                    <td mat-cell *matCellDef="let m">{{ m.dataMovimentacao | date:'dd/MM/yyyy':'UTC' }}</td>
+                                </ng-container>
+                                <ng-container matColumnDef="tipoMovimentacao">
+                                    <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                                    <td mat-cell *matCellDef="let m">
+                                        <span class="badge rounded-pill" [ngClass]="{'bg-danger': m.tipoMovimentacao === 'JUROS', 'bg-warning text-dark': m.tipoMovimentacao === 'ACRESCIMO', 'bg-success': m.tipoMovimentacao === 'PAGAMENTO'}">
+                                            {{ m.tipoMovimentacao === 'JUROS' ? 'Juros' : m.tipoMovimentacao === 'ACRESCIMO' ? 'Acréscimo' : 'Pagamento' }}
+                                        </span>
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="valor">
+                                    <th mat-header-cell *matHeaderCellDef>Valor</th>
+                                    <td mat-cell *matCellDef="let m">{{ m.valor | currency:'BRL':'symbol':'1.2-2' }}</td>
+                                </ng-container>
+                                <ng-container matColumnDef="saldoAtualizado">
+                                    <th mat-header-cell *matHeaderCellDef>Saldo Atualizado</th>
+                                    <td mat-cell *matCellDef="let m">{{ m.saldoAposMovimentacao | currency:'BRL':'symbol':'1.2-2' }}</td>
+                                </ng-container>
+                                <ng-container matColumnDef="descricao">
+                                    <th mat-header-cell *matHeaderCellDef>Lançamento</th>
+                                    <td mat-cell *matCellDef="let m">{{ m.observacoes || m.lancamento?.descricao || '—' }}</td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+                                <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+                            </table>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions align="end" class="d-print-none">
+                        <button mat-stroked-button color="primary" (click)="recalcularSaldo()" class="me-2" [disabled]="carregando">Recalcular Saldo</button>
+                        <button mat-button (click)="fecharDialog()">Fechar</button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

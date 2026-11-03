@@ -1,0 +1,259 @@
+<h2 mat-dialog-title class="dialog-header">
+  <div class="header-empresa-info">
+    <div class="empresa">{{ detalhamento?.nomeFantasia || detalhamento?.nomeEmpresa || 'Fatura' }}</div>
+    <div class="cnpj" *ngIf="detalhamento?.cnpj">{{ detalhamento?.cnpj }}</div>
+    <div class="contato" *ngIf="(detalhamento?.telefone || detalhamento?.contatoRestante) && detalhamento?.contato !== '—'">
+      Contato:
+      <a *ngIf="detalhamento?.telefoneWhatsApp" [href]="linkWhatsApp" target="_blank" rel="noopener noreferrer" class="whatsapp-link" title="Abrir no WhatsApp">
+        {{ detalhamento?.telefone }}
+      </a>
+      <span *ngIf="!detalhamento?.telefoneWhatsApp && detalhamento?.telefone">{{ detalhamento?.telefone }}</span>
+      <span *ngIf="detalhamento?.contatoRestante">{{ detalhamento?.telefone ? ' | ' : '' }}{{ detalhamento?.contatoRestante }}</span>
+    </div>
+    <ng-container *ngIf="detalhamento?.contatoFinanceiro as cf">
+      <div class="contato contato-financeiro" *ngIf="cf.nome || cf.telefone || cf.email">
+        Contato Financeiro:
+        <span *ngIf="cf.nome">{{ cf.nome }}</span>
+        <a *ngIf="cf.telefoneWhatsApp" [href]="getLinkWhatsApp(cf.telefoneWhatsApp)" target="_blank" rel="noopener noreferrer" class="whatsapp-link" title="Abrir no WhatsApp">{{ cf.telefone }}</a>
+        <span *ngIf="!cf.telefoneWhatsApp && cf.telefone">{{ cf.telefone }}</span>
+        <span *ngIf="cf.email">{{ (cf.nome || cf.telefone) ? ' | ' : '' }}{{ cf.email }}</span>
+      </div>
+    </ng-container>
+    <div class="referencia" *ngIf="detalhamento?.dataReferencia">
+      Referência: {{ detalhamento?.dataReferencia | date:'MMMM yyyy':'pt-BR' }}
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button mat-stroked-button color="primary" (click)="carregarDetalhamento()" [disabled]="carregando">
+      <mat-icon>refresh</mat-icon>
+      Recarregar
+    </button>
+    <button mat-raised-button color="accent" (click)="imprimir()" [disabled]="carregando || !!erro">
+      <mat-icon>print</mat-icon>
+      Imprimir
+    </button>
+  </div>
+</h2>
+
+<mat-dialog-content>
+  <div class="loading-container" *ngIf="carregando">
+    <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+    <p>Carregando detalhamento...</p>
+  </div>
+
+  <div class="erro-container" *ngIf="erro && !carregando">
+    <p>{{ erro }}</p>
+  </div>
+
+  <div *ngIf="!carregando && !erro && detalhamento" class="detalhamento-conteudo">
+    <section>
+      <h3>Serviços</h3>
+      <p *ngIf="!temServicos" class="empty-message">Nenhum serviço encontrado para esta fatura.</p>
+
+      <table *ngIf="temServicos">
+        <thead>
+          <tr>
+            <th>ID Trabalho</th>
+            <th>Data Conclusão</th>
+            <th>Paciente</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Qtd.</th>
+            <th>Valor Unit.</th>
+            <th>Valor Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let servico of detalhamento.servicos" [ngClass]="obterClassesLinha(servico.statusTrabalho)">
+            <td>{{ servico.idTrabalho }}</td>
+            <td>{{ servico.dataConclusao | date:'dd/MM/yyyy' }}</td>
+            <td>{{ servico.nomePaciente }}</td>
+            <td>{{ servico.descricao }}<span *ngIf="servico.elementosNomes"> | {{ servico.elementosNomes }}</span></td>
+            <td><span [ngClass]="obterClassesStatus(servico.statusTrabalho)">{{ servico.statusTrabalho }}</span></td>
+            <td>{{ servico.quantidade }}</td>
+            <td>{{ servico.valorUnitario | currency:'BRL' }}</td>
+            <td>{{ servico.valorTotal | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>Componentes</h3>
+      <p *ngIf="!temComponentes" class="empty-message">Nenhum componente para pagamento nesta fatura</p>
+
+      <table *ngIf="temComponentes">
+        <thead>
+          <tr>
+            <th>ID Trabalho</th>
+            <th>Data Conclusão</th>
+            <th>Paciente</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Qtd.</th>
+            <th>Valor Unit.</th>
+            <th>Valor Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let componente of detalhamento.componentes" [ngClass]="obterClassesLinha(componente.statusTrabalho)">
+            <td>{{ componente.idTrabalho }}</td>
+            <td>{{ componente.dataConclusao | date:'dd/MM/yyyy' }}</td>
+            <td>{{ componente.nomePaciente }}</td>
+            <td>{{ componente.descricao }}</td>
+            <td><span [ngClass]="obterClassesStatus(componente.statusTrabalho)">{{ textoStatusItem(componente.statusTrabalho) }}</span></td>
+            <td>{{ componente.quantidade }}</td>
+            <td>{{ componente.valorUnitario | currency:'BRL' }}</td>
+            <td>{{ componente.valorTotal | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="secao-devolucoes-componentes-desconto" *ngIf="detalhamento.devolucoesComponentes && detalhamento.devolucoesComponentes.length > 0">
+      <h3>Componentes Devolvidos (Desconto)</h3>
+      <p class="secao-aguardando-lede">
+        Os componentes físicos listados abaixo foram devolvidos pelo cliente e convertidos em desconto na fatura.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th class="text-right" style="text-align: right; width: 80px;">Qtd.</th>
+            <th class="text-right" style="text-align: right; width: 120px;">Valor Unit.</th>
+            <th class="text-right" style="text-align: right; width: 140px;">Valor Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dev of detalhamento.devolucoesComponentes">
+            <td>
+              {{ dev.nomeComponente }}
+              <span *ngIf="dev.nomePaciente" style="font-size: 11.5px; color: #555; font-style: italic; margin-left: 5px;">
+                — Paciente: {{ dev.nomePaciente }}
+              </span>
+            </td>
+            <td class="text-right" style="text-align: right;">{{ dev.quantidade }}</td>
+            <td class="text-right" style="text-align: right;">{{ dev.valorUnitario | currency:'BRL' }}</td>
+            <td class="text-right" style="text-align: right;">{{ dev.valorTotal | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="secao-aguardando-devolucao" *ngIf="temComponentesAguardandoDevolucao">
+      <h3>Componentes para reposição futura</h3>
+      <p class="secao-aguardando-lede">
+        Componentes abaixo estão pendentes de devolução e serão destinados à reposição futura após conferência.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Trabalho</th>
+            <th>Data Conclusão</th>
+            <th>Paciente</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Qtd.</th>
+            <th>Valor Unit.</th>
+            <th>Valor Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of componentesAguardandoDevolucao" class="linha-aguardando-devolucao-destaque">
+            <td>{{ c.idTrabalho }}</td>
+            <td>{{ c.dataConclusao | date:'dd/MM/yyyy' }}</td>
+            <td>{{ c.nomePaciente }}</td>
+            <td>{{ c.descricao }}</td>
+            <td><span class="status-aguardando">{{ textoStatusItem(c.statusTrabalho) }}</span></td>
+            <td>{{ c.quantidade }}</td>
+            <td>{{ c.valorUnitario | currency:'BRL' }}</td>
+            <td>{{ (c.quantidade * c.valorUnitario) | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <div class="secao-contabilizacao-devolucao" *ngIf="temSomatorioDevolucao">
+        <h4 class="titulo-contabilizacao-devolucao">Contabilização (reposição pendente de envio)</h4>
+        <p class="resumo-contabilizacao-devolucao">
+          {{ detalhamento.nomeFantasia || detalhamento.nomeEmpresa }}:
+          {{ resumoDevolucaoFatura!.totalSolicitacoes }} solicitação(ões) em aberto |
+          {{ resumoDevolucaoFatura!.totalQuantidade }} unidade(s) a devolver
+        </p>
+        <table class="tabela-somatorio-devolucao">
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th class="col-qtd-somatorio">Qtd. total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of somatorioDevolucaoPorComponente; trackBy: trackBySomatorio">
+              <td>{{ s.descricaoComponente }}</td>
+              <td class="col-qtd-somatorio">{{ s.quantidadeTotal }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="totais">
+      <div class="totais-secao">
+        <h4>Subtotal</h4>
+        <div class="total-item">
+          <span>Total de Serviços:</span>
+          <strong>{{ detalhamento.valorTotalServicos | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item">
+          <span>Total de Componentes:</span>
+          <strong>{{ detalhamento.valorTotalComponentes | currency:'BRL' }}</strong>
+        </div>
+
+        <h4 style="margin-top: 15px; margin-bottom: 5px;">Descontos</h4>
+        <div class="total-item desconto" *ngIf="detalhamento.desconto && detalhamento.desconto > 0">
+          <span>Desconto Geral:</span>
+          <strong class="valor-desconto">- {{ detalhamento.desconto | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item desconto-devolucao" *ngIf="detalhamento.descontoDevolucao && detalhamento.descontoDevolucao > 0">
+          <span>Desconto por Devolução:</span>
+          <strong class="valor-desconto">- {{ detalhamento.descontoDevolucao | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item" *ngIf="(!detalhamento.desconto || detalhamento.desconto <= 0) && (!detalhamento.descontoDevolucao || detalhamento.descontoDevolucao <= 0)">
+          <span style="color: #999; font-style: italic; font-size: 13px;">Nenhum desconto aplicado</span>
+        </div>
+
+        <h4 style="margin-top: 15px; margin-bottom: 5px;">Total</h4>
+        <div class="total-item total-bruto">
+          <span>Total Bruto:</span>
+          <strong>{{ detalhamento.valorTotalBruto | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item total-descontos" *ngIf="(detalhamento.desconto || 0) + (detalhamento.descontoDevolucao || 0) > 0">
+          <span>Total Descontos:</span>
+          <strong class="valor-desconto">- {{ ((detalhamento.desconto || 0) + (detalhamento.descontoDevolucao || 0)) | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item total-geral">
+          <span>Total a pagar:</span>
+          <strong>{{ detalhamento.valorTotalGeral | currency:'BRL' }}</strong>
+        </div>
+      </div>
+
+      <div class="totais-secao">
+        <h4>Status de Pagamento</h4>
+        <div class="total-item valor-pago">
+          <span>Valor Pago:</span>
+          <strong>{{ detalhamento.valorPago | currency:'BRL' }}</strong>
+        </div>
+        <div class="total-item valor-pendente">
+          <span>Valor Pendente:</span>
+          <strong>{{ detalhamento.valorPendente | currency:'BRL' }}</strong>
+        </div>
+      </div>
+    </footer>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="fechar()">Fechar</button>
+</mat-dialog-actions>
+

@@ -1,0 +1,77 @@
+<div class="mb-25 tagus-card">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="tagus-form ms-auto me-auto">
+                <mat-card class="mb-25 tagus-card">
+                    <mat-card-header>
+                        <h5 class="mb-0">{{ isEdit ? 'Editar Fornecedor' : 'Cadastrar Fornecedor' }}</h5>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form [formGroup]="fornecedorForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Nome</mat-label>
+                                        <input matInput formControlName="nome" placeholder="Ex: Transportadora XYZ">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Tipo</mat-label>
+                                        <mat-select formControlName="tipo">
+                                            <mat-option *ngFor="let tipo of tiposFornecedor" [value]="tipo.id">
+                                                {{ tipo.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Contato</mat-label>
+                                        <input matInput formControlName="contato" placeholder="Nome do contato">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Telefone</mat-label>
+                                        <input matInput formControlName="telefone" placeholder="(00) 00000-0000">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Email</mat-label>
+                                        <input type="email" matInput formControlName="email" placeholder="email@exemplo.com">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <mat-form-field class="w-100">
+                                        <mat-label>Empresa</mat-label>
+                                        <mat-select formControlName="idEmpresa">
+                                            <mat-option [value]="null">Nenhuma</mat-option>
+                                            <mat-option *ngFor="let empresa of empresas" [value]="empresa.idEmpresa">
+                                                {{ empresa.nome }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-card-content>
+                    <mat-card-actions align="end">
+                        <button mat-button (click)="dialogRef.close()">Cancelar</button>
+                        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="fornecedorForm.invalid">
+                            Salvar
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>
+

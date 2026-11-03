@@ -1,0 +1,3 @@
+<div *ngIf="paciente">
+  <app-paciente-cadastro #cadastroPaciente [pacienteData]="paciente" (onSave)="handleSave($event)"></app-paciente-cadastro>
+</div>

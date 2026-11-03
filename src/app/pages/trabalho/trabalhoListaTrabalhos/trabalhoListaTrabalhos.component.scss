@@ -1,0 +1,150 @@
+.botaoAddTrabalho {
+  width: 20vw;
+  height: 10vw;
+  border: 1px solid #ddd4d4;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+$status-colors: (
+  'PENDENTE': #E53935,
+  'MODELAGEM': #FB8C00,
+  'IMPRESSAO_PROVA': #F57C00,
+  'IMPRESSAO_CARGA_CERAMICA': #FFA726,
+  'IMPRESSAO_BIOSPLINT_PLACA': #FBC02D,
+  'FRESAGEM': #FDD835,
+  'SINTERIZACAO': #C0CA33,
+  'MAQUIAGEM': #9CCC65,
+  'AGUARDANDO_COMPONENTE': #7CB342,
+  'PACOTE': #43A047,
+  'AGUARDANDO_COLETA': #388E3C,
+  'ENVIADO': #2E7D32,
+  'PAGAMENTO_RECEBIDO': #1B5E20,
+  'CANCELADO': #9E9E9E
+);
+
+.status-selector {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 1rem;
+
+  mat-card {
+    background: #fafafa;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+  }
+
+  mat-card-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #424242;
+  }
+
+  mat-selection-list {
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    mat-list-option {
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+
+      @each $status, $color in $status-colors {
+        &[value="#{$status}"] {
+          color: if(lightness($color) < 60, #212121, white);
+        }
+      }
+    }
+  }
+
+  button[mat-raised-button] {
+    margin-top: 1rem;
+    width: 100%;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+}
+
+.status-item {
+  @each $status, $color in $status-colors {
+    .status-item.status-#{to-lower-case($status)} {
+      background: $color;
+      color: if(lightness($color) > 60, #212121, white);
+    }
+  }
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-transform: capitalize;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+
+  &.pendente {
+    background: #E53935;
+  }
+
+  &.modeling {
+    background: #FB8C00;
+  }
+
+  &.impressao_prova {
+    background: #F57C00;
+  }
+
+  &.impressao_carga_ceramica {
+    background: #FFA726;
+  }
+
+  &.impressao_biosplint_placa {
+    background: #FBC02D;
+    color: #212121;
+  }
+
+  &.fresagem {
+    background: #FDD835;
+    color: #212121;
+  }
+
+  &.sintetizacao {
+    background: #C0CA33;
+    color: #212121;
+  }
+
+  &.maquiagem {
+    background: #9CCC65;
+    color: #212121;
+  }
+
+  &.aguardando_componente {
+    background: #7CB342;
+  }
+
+  &.pacote {
+    background: #43A047;
+  }
+
+  &.aguardando_coleta {
+    background: #388E3C;
+  }
+
+  &.enviado {
+    background: #2E7D32;
+  }
+
+  &.pagamento_recebido {
+    background: #1B5E20;
+  }
+
+  &.cancelado {
+    background: #9E9E9E;
+  }
+}

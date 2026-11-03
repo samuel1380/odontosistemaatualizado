@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Você tem certeza que deseja apagar o arquivo?</h1>
+<div mat-dialog-content>
+  Após ser removido não poderá ser recuperado.
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close(false)">Cancelar</button>
+  <button mat-button (click)="dialogRef.close(true)">Confirmar</button>
+</div>
