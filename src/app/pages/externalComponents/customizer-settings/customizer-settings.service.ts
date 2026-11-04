@@ -16,19 +16,34 @@ export class CustomizerSettingsService {
     private isRTLEnabledTheme: boolean;
 
     constructor() {
-        this.isDarkTheme = JSON.parse(localStorage.getItem('isDarkTheme')!);
-        this.isSidebarDarkTheme = JSON.parse(localStorage.getItem('isSidebarDarkTheme')!);
-        this.isRightSidebarTheme = JSON.parse(localStorage.getItem('isRightSidebarTheme')!);
-        this.isHideSidebarTheme = JSON.parse(localStorage.getItem('isHideSidebarTheme')!);
-        this.isHeaderDarkTheme = JSON.parse(localStorage.getItem('isHeaderDarkTheme')!);
-        this.isCardBorderTheme = JSON.parse(localStorage.getItem('isCardBorderTheme')!);
-        this.isCardBorderRadiusTheme = JSON.parse(localStorage.getItem('isCardBorderRadiusTheme')!);
-        this.isRTLEnabledTheme = JSON.parse(localStorage.getItem('isRTLEnabledTheme')!);
+        this.isDarkTheme = !!JSON.parse(localStorage.getItem('isDarkTheme')!);
+        this.isSidebarDarkTheme = !!JSON.parse(localStorage.getItem('isSidebarDarkTheme')!);
+        this.isRightSidebarTheme = !!JSON.parse(localStorage.getItem('isRightSidebarTheme')!);
+        this.isHideSidebarTheme = !!JSON.parse(localStorage.getItem('isHideSidebarTheme')!);
+        this.isHeaderDarkTheme = !!JSON.parse(localStorage.getItem('isHeaderDarkTheme')!);
+        this.isCardBorderTheme = !!JSON.parse(localStorage.getItem('isCardBorderTheme')!);
+        this.isCardBorderRadiusTheme = !!JSON.parse(localStorage.getItem('isCardBorderRadiusTheme')!);
+        this.isRTLEnabledTheme = !!JSON.parse(localStorage.getItem('isRTLEnabledTheme')!);
+
+        this.applyDomTheme();
+    }
+
+    private applyDomTheme() {
+        if (typeof document !== 'undefined') {
+            if (this.isDarkTheme) {
+                document.body.classList.add('dark-theme');
+                document.documentElement.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+                document.documentElement.classList.remove('dark-theme');
+            }
+        }
     }
 
     toggleTheme() {
         this.isDarkTheme = !this.isDarkTheme;
         localStorage.setItem('isDarkTheme', JSON.stringify(this.isDarkTheme));
+        this.applyDomTheme();
     }
 
     toggleSidebarTheme() {
@@ -71,7 +86,7 @@ export class CustomizerSettingsService {
     }
 
     isSidebarDark() {
-        return this.isSidebarDarkTheme;
+        return this.isSidebarDarkTheme || this.isDarkTheme;
     }
 
     isRightSidebar() {
@@ -83,7 +98,7 @@ export class CustomizerSettingsService {
     }
 
     isHeaderDark() {
-        return this.isHeaderDarkTheme;
+        return this.isHeaderDarkTheme || this.isDarkTheme;
     }
 
     isCardBorder() {
