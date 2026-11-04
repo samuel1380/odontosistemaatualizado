@@ -33,9 +33,11 @@ export class CustomizerSettingsService {
             if (this.isDarkTheme) {
                 document.body.classList.add('dark-theme');
                 document.documentElement.classList.add('dark-theme');
+                document.querySelectorAll('.cdk-overlay-container').forEach(el => el.classList.add('dark-theme'));
             } else {
                 document.body.classList.remove('dark-theme');
                 document.documentElement.classList.remove('dark-theme');
+                document.querySelectorAll('.cdk-overlay-container').forEach(el => el.classList.remove('dark-theme'));
             }
         }
     }

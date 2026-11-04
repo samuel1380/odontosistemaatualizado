@@ -2978,11 +2978,74 @@ html.dark-theme,
         --mdc-outlined-text-field-input-text-color: #f8fafc;
         --mdc-outlined-text-field-container-shape: 8px;
 
+        --mdc-filled-text-field-container-color: #131d2e;
+        --mdc-filled-text-field-input-text-color: #f8fafc;
+        --mdc-filled-text-field-label-text-color: #94a3b8;
+        --mdc-filled-text-field-focus-label-text-color: #38bdf8;
+        --mdc-filled-text-field-active-indicator-color: #334155;
+        --mdc-filled-text-field-focus-active-indicator-color: #38bdf8;
+        --mdc-filled-text-field-hover-active-indicator-color: #475569;
+
         .mat-mdc-select-value {
             color: #f8fafc !important;
         }
         .mat-mdc-select-arrow {
             color: #94a3b8 !important;
+        }
+    }
+
+    // Chips (Elementos e Componentes)
+    .mat-mdc-chip,
+    .mat-mdc-chip-row,
+    .mat-chip {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border: 1px solid #334155 !important;
+
+        .mat-mdc-chip-action-label,
+        .mat-chip-action-label {
+            color: #f1f5f9 !important;
+        }
+
+        .mat-mdc-chip-remove,
+        .mat-chip-remove {
+            color: #94a3b8 !important;
+            opacity: 0.8;
+            &:hover {
+                color: #f87171 !important;
+                opacity: 1;
+            }
+        }
+    }
+
+    // Selects nativos e opções
+    select {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+
+        option {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+        }
+    }
+
+    // Selection List
+    mat-selection-list,
+    .mat-mdc-selection-list {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+
+        mat-list-option,
+        .mat-mdc-list-option {
+            color: #f1f5f9 !important;
+            &:hover {
+                background-color: #334155 !important;
+            }
+            &.mdc-list-item--selected {
+                background-color: rgba(56, 189, 248, 0.2) !important;
+            }
         }
     }
 
@@ -3012,10 +3075,11 @@ html.dark-theme,
     }
 }
 
-// Dialogs, Modals, Menus, Selects (CDK Overlays)
+// Dialogs, Modals, Menus, Selects e Autocompletes (CDK Overlays)
 body.dark-theme,
 html.dark-theme,
-.dark-theme {
+.dark-theme,
+.cdk-overlay-container {
     // Dialogs / Modals
     .mat-mdc-dialog-container .mat-mdc-dialog-surface,
     .mat-mdc-dialog-surface {
@@ -3036,20 +3100,100 @@ html.dark-theme,
         border-top-color: #1e293b !important;
     }
 
-    // Select Dropdown Panel
-    .mat-mdc-select-panel {
+    // Painéis de Autocomplete e Select Dropdowns
+    .mat-mdc-autocomplete-panel,
+    .mat-autocomplete-panel,
+    .mat-mdc-select-panel,
+    .mat-select-panel,
+    .mdc-menu-surface {
         background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
-    }
-    .mat-mdc-option {
+        background: #1e293b !important;
         color: #f1f5f9 !important;
-        &:hover, &.mat-mdc-option-active {
-            background-color: #334155 !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+        border-radius: 8px !important;
+
+        &::-webkit-scrollbar {
+            width: 6px;
         }
-        &.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+        &::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+            &:hover {
+                background: #475569;
+            }
+        }
+    }
+
+    // Opções dentro de Selects, Autocompletes e Menus
+    .mat-mdc-option,
+    .mat-option {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+
+        .mdc-list-item__primary-text,
+        .mat-option-text {
+            color: #f1f5f9 !important;
+        }
+
+        &:hover,
+        &.mat-mdc-option-active,
+        &.mat-active {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+            .mdc-list-item__primary-text,
+            .mat-option-text {
+                color: #ffffff !important;
+            }
+        }
+
+        &.mdc-list-item--selected:not(.mat-mdc-option-multiple),
+        &.mat-selected:not(.mat-option-multiple) {
+            background-color: rgba(56, 189, 248, 0.2) !important;
+            color: #38bdf8 !important;
+
+            .mdc-list-item__primary-text,
+            .mat-option-text {
+                color: #38bdf8 !important;
+                font-weight: 600;
+            }
+        }
+
+        &.mat-mdc-option-multiple.mdc-list-item--selected,
+        &.mat-option-multiple.mat-selected {
             background-color: rgba(56, 189, 248, 0.15) !important;
             color: #38bdf8 !important;
+
+            .mdc-list-item__primary-text,
+            .mat-option-text {
+                color: #38bdf8 !important;
+            }
         }
+
+        .mat-pseudo-checkbox {
+            border-color: #94a3b8 !important;
+            &.mat-pseudo-checkbox-checked {
+                background-color: #38bdf8 !important;
+            }
+        }
+
+        &.mat-mdc-option-disabled,
+        &.mat-option-disabled {
+            color: #64748b !important;
+            .mdc-list-item__primary-text,
+            .mat-option-text {
+                color: #64748b !important;
+            }
+        }
+    }
+
+    .mat-mdc-optgroup-label,
+    .mat-optgroup-label {
+        color: #94a3b8 !important;
+        font-weight: 600;
     }
 
     // Menus Dropdown (Perfil, Ações)
