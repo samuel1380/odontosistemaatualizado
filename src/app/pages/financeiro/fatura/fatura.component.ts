@@ -15,6 +15,7 @@ import { FaturaDetalhesComponent } from './fatura-detalhes/fatura-detalhes.compo
 import { FaturaDetalhamentoImpressaoComponent } from './fatura-detalhes/fatura-detalhamento-impressao.component';
 import { DetalhamentoImpressaoResponse } from 'src/services/financeiro.fatura.service';
 import { LancarValorFaturaDialogComponent } from './lancar-valor-fatura-dialog/lancar-valor-fatura-dialog.component';
+import { AlterarCompetenciaFaturaDialogComponent } from './alterar-competencia-fatura-dialog/alterar-competencia-fatura-dialog.component';
 
 interface Empresa {
   idEmpresa: number;
@@ -207,6 +208,30 @@ export class FaturaComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Erro ao buscar detalhes da fatura', err);
         this.snackBar.open('Falha ao carregar detalhes da fatura.', 'Fechar', { duration: 3000 });
+      }
+    });
+  }
+
+  abrirAlterarCompetencia(fatura: Fatura, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const idEmpresa = (fatura as any).empresa?.idEmpresa || (fatura as any).idEmpresa;
+    const nomeEmpresa = fatura.nomeEmpresa || (fatura as any).empresa?.nome;
+
+    const dialogRef = this.dialog.open(AlterarCompetenciaFaturaDialogComponent, {
+      width: '540px',
+      data: {
+        fatura: fatura,
+        idEmpresa: idEmpresa,
+        nomeEmpresa: nomeEmpresa
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res?.sucesso) {
+        this.buscar(); // Atualiza a lista de faturas automaticamente
       }
     });
   }

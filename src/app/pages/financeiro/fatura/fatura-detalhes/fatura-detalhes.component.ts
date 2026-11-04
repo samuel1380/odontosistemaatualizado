@@ -8,6 +8,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { DevolucaoComponenteService, SolicitarDevolucaoPayload } from 'src/services/devolucao-componente.service';
 import { forkJoin } from 'rxjs';
 import { TrocarFaturaDialogComponent } from './trocar-fatura-dialog.component';
+import { AlterarCompetenciaFaturaDialogComponent } from '../alterar-competencia-fatura-dialog/alterar-competencia-fatura-dialog.component';
 import { DividirFaturaDialogComponent } from './dividir-fatura-dialog.component';
 import { FaturaDetalhamentoImpressaoComponent } from './fatura-detalhamento-impressao.component';
 import { AplicarDescontoDialogComponent } from './aplicar-desconto-dialog.component';
@@ -649,7 +650,7 @@ export class FaturaDetalhesComponent implements OnInit {
   }
 
   trocarFaturaOrdemServico(os: any): void {
-    const idEmpresa = os?.idEmpresa || (this.fatura as any).empresa?.idEmpresa;
+    const idEmpresa = os?.idEmpresa || (this.fatura as any).empresa?.idEmpresa || (this.fatura as any).idEmpresa;
 
     if (!idEmpresa) {
       this.snackBar.open('Não foi possível identificar a empresa da fatura.', 'Fechar', { duration: 3000 });
@@ -665,29 +666,60 @@ export class FaturaDetalhesComponent implements OnInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe(confirmado => {
+    dialogRef.afterClosed().subscribe(resultado => {
+      const confirmado = typeof resultado === 'boolean' ? resultado : resultado?.confirmado;
       if (confirmado) {
+        const idDestino = resultado && typeof resultado === 'object' && resultado.idFaturaDestino ? resultado.idFaturaDestino : null;
+
         const payload: MoverOrdemServicoPayload = {
           idOrdemServico: os.idOrdemServico,
-          idFaturaDestino: null,
+          idFaturaDestino: idDestino,
           idEmpresa: idEmpresa
         };
 
         this.faturaService.moverOrdemServico(payload).subscribe({
           next: () => {
-            this.snackBar.open('Ordem de serviço movida para a próxima fatura com sucesso!', 'Fechar', { duration: 3000 });
+            const mensagem = idDestino
+              ? `Ordem de serviço movida para a Fatura #${idDestino} com sucesso!`
+              : 'Ordem de serviço movida com sucesso!';
+            this.snackBar.open(mensagem, 'Fechar', { duration: 3000 });
             this.faturaFoiAlterada = true;
             this.refreshFaturaData();
           },
           error: (err) => {
             console.error('Erro ao mover ordem de serviço', err);
             this.snackBar.open(
-              err?.error?.resposta || 'Falha ao mover a ordem de serviço. Tente novamente.',
+              err?.error?.resposta || err?.error?.message || 'Falha ao mover a ordem de serviço. Tente novamente.',
               'Fechar',
               { duration: 5000 }
             );
           }
         });
+      }
+    });
+  }
+
+  abrirAlterarCompetencia(): void {
+    const idEmpresa = (this.fatura as any).empresa?.idEmpresa || (this.fatura as any).idEmpresa;
+    const nomeEmpresa = this.nomeFantasia || this.fatura.nomeEmpresa || (this.fatura as any).empresa?.nome;
+
+    const dialogRef = this.dialog.open(AlterarCompetenciaFaturaDialogComponent, {
+      width: '540px',
+      data: {
+        fatura: this.fatura,
+        idEmpresa: idEmpresa,
+        nomeEmpresa: nomeEmpresa
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res?.sucesso) {
+        this.faturaFoiAlterada = true;
+        this.refreshFaturaData();
+        // Se a fatura atual ficou vazia ou foi transferida para outra, podemos fechar o modal ou recarregar
+        setTimeout(() => {
+          this.refreshFaturaData();
+        }, 500);
       }
     });
   }

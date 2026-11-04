@@ -1,0 +1,109 @@
+<div class="alterar-competencia-dialog-container">
+  <h2 mat-dialog-title class="dialog-title d-flex align-items-center gap-2">
+    <mat-icon color="primary">calendar_month</mat-icon>
+    <span>Alterar Mês / Competência da Fatura</span>
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <!-- Card de Informações da Fatura Atual -->
+    <div class="info-card mb-3">
+      <div class="info-row">
+        <span class="info-label">Fatura:</span>
+        <span class="info-value font-weight-bold">#{{ faturaCompleta.idFatura }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Empresa / Clínica:</span>
+        <span class="info-value">{{ nomeEmpresa }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Competência Atual:</span>
+        <span class="badge-competencia-atual">
+          {{ nomeMesAtualFatura }} / {{ anoAtualFatura }}
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Trabalhos Inclusos:</span>
+        <span class="info-value">{{ totalTrabalhos }} trabalho(s) — {{ valorTotalFatura | currency:'BRL' }}</span>
+      </div>
+    </div>
+
+    <!-- Mensagem explicativa -->
+    <div class="alert-explicativo mb-3">
+      <mat-icon class="alert-icon">info</mat-icon>
+      <div class="alert-text">
+        Selecione o <strong>Mês e Ano</strong> correto para onde deseja transferir esta fatura.
+        Todos os <strong>{{ totalTrabalhos }} trabalhos</strong> serão transferidos para a competência selecionada, reorganizando os relatórios e faturamentos de forma correta.
+      </div>
+    </div>
+
+    <!-- Seleção de Competência de Destino -->
+    <div class="row align-items-center g-3">
+      <div class="col-md-7">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Novo Mês de Competência</mat-label>
+          <mat-select [formControl]="mesDestinoControl" [disabled]="salvando">
+            <mat-option *ngFor="let m of meses" [value]="m.valor">
+              {{ m.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-5">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Novo Ano</mat-label>
+          <mat-select [formControl]="anoDestinoControl" [disabled]="salvando">
+            <mat-option *ngFor="let a of anos" [value]="a">
+              {{ a }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Indicador de Destino Detectado -->
+    <div class="destino-preview mt-2" *ngIf="mesDestinoControl.value && anoDestinoControl.value">
+      <div *ngIf="verificandoFaturaDestino" class="d-flex align-items-center gap-2 text-muted">
+        <mat-spinner diameter="18"></mat-spinner>
+        <span>Verificando faturas abertas do período...</span>
+      </div>
+
+      <div *ngIf="!verificandoFaturaDestino && faturaDestinoExistente" class="badge-destino-encontrado">
+        <mat-icon class="mini-icon">task_alt</mat-icon>
+        <span>
+          Será unificada na fatura aberta <strong>#{{ faturaDestinoExistente.idFatura }}</strong> da competência {{ mesDestinoControl.value }}/{{ anoDestinoControl.value }}.
+        </span>
+      </div>
+
+      <div *ngIf="!verificandoFaturaDestino && !faturaDestinoExistente" class="badge-destino-novo">
+        <mat-icon class="mini-icon">add_circle_outline</mat-icon>
+        <span>
+          Será criada uma nova fatura aberta na competência <strong>{{ mesDestinoControl.value }}/{{ anoDestinoControl.value }}</strong>.
+        </span>
+      </div>
+    </div>
+
+    <!-- Barra de progresso durante salvamento -->
+    <div class="progresso-container mt-3" *ngIf="salvando">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <mat-spinner diameter="24"></mat-spinner>
+        <span class="progresso-texto font-weight-bold">{{ progressoTexto }}</span>
+      </div>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="cancelar()" [disabled]="salvando">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="confirmar()"
+      [disabled]="salvando || loading || totalTrabalhos === 0">
+      <mat-icon *ngIf="!salvando">check</mat-icon>
+      <span>{{ salvando ? 'Transferindo...' : 'Confirmar Alteração' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

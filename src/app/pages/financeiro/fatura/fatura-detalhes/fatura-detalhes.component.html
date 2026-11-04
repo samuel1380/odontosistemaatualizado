@@ -13,6 +13,9 @@
   <button mat-icon-button color="primary" (click)="abrirModalDevolucaoComponentes()" title="Desconto por Devolução de Componentes">
     <mat-icon>assignment_return</mat-icon>
   </button>
+  <button mat-icon-button color="primary" (click)="abrirAlterarCompetencia()" title="Alterar Mês / Competência da Fatura">
+    <mat-icon>calendar_month</mat-icon>
+  </button>
 </h2>
 <mat-dialog-content>
   <div class="fatura-cabecalho-empresa" *ngIf="fatura.empresa">
@@ -213,6 +216,12 @@
 
   <button mat-stroked-button color="accent" (click)="abrirModalDividir()" [disabled]="fatura.status !== 'ABERTA'">
     Dividir Fatura
+  </button>
+
+  <button mat-stroked-button color="primary" (click)="abrirAlterarCompetencia()" [disabled]="fatura.status === 'PAGA'"
+          title="Transferir trabalhos desta fatura para outro mês/competência">
+    <mat-icon style="font-size: 18px; height: 18px; width: 18px; vertical-align: middle; margin-right: 4px;">calendar_month</mat-icon>
+    Alterar Mês
   </button>
 
   <span matTooltip="Não é possível fechar a fatura, pois há devoluções pendentes.">

@@ -108,6 +108,14 @@
               <mat-icon>visibility</mat-icon>
             </button>
             <button
+              mat-icon-button
+              color="primary"
+              (click)="abrirAlterarCompetencia(element, $event)"
+              matTooltip="Alterar Mês / Competência da Fatura"
+              type="button">
+              <mat-icon>calendar_month</mat-icon>
+            </button>
+            <button
               *ngIf="podeLancarValor(element)"
               mat-icon-button
               color="primary"

@@ -132,6 +132,7 @@ import { FaturaComponent } from './pages/financeiro/fatura/fatura.component';
 import { FaturasPendentesComponent } from './pages/financeiro/faturas-pendentes/faturas-pendentes.component';
 import { FaturaDetalhesComponent } from './pages/financeiro/fatura/fatura-detalhes/fatura-detalhes.component';
 import { LancarValorFaturaDialogComponent } from './pages/financeiro/fatura/lancar-valor-fatura-dialog/lancar-valor-fatura-dialog.component';
+import { AlterarCompetenciaFaturaDialogComponent } from './pages/financeiro/fatura/alterar-competencia-fatura-dialog/alterar-competencia-fatura-dialog.component';
 import { TrocarFaturaDialogComponent } from './pages/financeiro/fatura/fatura-detalhes/trocar-fatura-dialog.component';
 import { DividirFaturaDialogComponent } from './pages/financeiro/fatura/fatura-detalhes/dividir-fatura-dialog.component';
 import { AplicarDescontoDialogComponent } from './pages/financeiro/fatura/fatura-detalhes/aplicar-desconto-dialog.component';
@@ -274,6 +275,7 @@ registerLocaleData(ptBr);
     FaturasPendentesComponent,
     FaturaDetalhesComponent,
     LancarValorFaturaDialogComponent,
+    AlterarCompetenciaFaturaDialogComponent,
     TrocarFaturaDialogComponent,
     DividirFaturaDialogComponent,
     FaturaDetalhamentoImpressaoComponent,

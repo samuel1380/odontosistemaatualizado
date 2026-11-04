@@ -177,7 +177,7 @@ export interface RelatorioFaturasPendentesResponse {
 
 export interface MoverOrdemServicoPayload {
   idOrdemServico: number;
-  idFaturaDestino: null;
+  idFaturaDestino?: number | null;
   idEmpresa: number;
 }
 
