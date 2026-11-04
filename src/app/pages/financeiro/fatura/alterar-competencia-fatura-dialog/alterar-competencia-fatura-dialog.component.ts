@@ -289,3 +289,4 @@ export class AlterarCompetenciaFaturaDialogComponent implements OnInit {
     this.dialogRef.close(null);
   }
 }
+

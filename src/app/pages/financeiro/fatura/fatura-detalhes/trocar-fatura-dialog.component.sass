@@ -6,7 +6,13 @@ mat-dialog-content
     margin: 10px 0
 
   .info-text
-    color: #666
+    color: #64748b
     font-size: 0.9em
     font-style: italic
 
+:host-context(.dark-theme)
+  .info-text
+    color: #94a3b8
+
+  .text-muted
+    color: #cbd5e1 !important

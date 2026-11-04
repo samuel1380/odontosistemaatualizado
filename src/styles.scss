@@ -2782,9 +2782,17 @@ quill-editor {
 // ========================================================
 // MELHORIAS COMPLETAS DO MODO ESCURO (HARMONICO COM AZUL)
 // ========================================================
+
+// CDK Overlay Container deve SEMPRE ser 100% transparente para nunca escurecer a tela
+.cdk-overlay-container,
+.cdk-overlay-pane {
+    background: transparent !important;
+    background-color: transparent !important;
+    pointer-events: none !important;
+}
+
 body.dark-theme,
-html.dark-theme,
-.dark-theme {
+html.dark-theme {
     background-color: #0b1120 !important;
     color: #f1f5f9 !important;
 
@@ -3075,11 +3083,9 @@ html.dark-theme,
     }
 }
 
-// Dialogs, Modals, Menus, Selects e Autocompletes (CDK Overlays)
+// Dialogs, Modals, Menus, Selects e Autocompletes (CDK Overlays) no MODO ESCURO
 body.dark-theme,
-html.dark-theme,
-.dark-theme,
-.cdk-overlay-container {
+html.dark-theme {
     // Dialogs / Modals
     .mat-mdc-dialog-container .mat-mdc-dialog-surface,
     .mat-mdc-dialog-surface {
@@ -3263,6 +3269,77 @@ html.dark-theme,
             background: #475569;
         }
     }
+}
+
+// Dialogs, Modals, Menus, Selects e Autocompletes no MODO CLARO (Garante consistência total)
+body:not(.dark-theme) {
+    .mat-mdc-dialog-container .mat-mdc-dialog-surface,
+    .mat-mdc-dialog-surface {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    }
+    .mat-mdc-dialog-title,
+    .dialog-header {
+        color: #0f172a !important;
+        border-bottom-color: #e2e8f0 !important;
+    }
+    .mat-mdc-dialog-content {
+        color: #334155 !important;
+    }
+    .mat-mdc-dialog-actions {
+        border-top-color: #e2e8f0 !important;
+    }
+
+    .mat-mdc-autocomplete-panel,
+    .mat-autocomplete-panel,
+    .mat-mdc-select-panel,
+    .mat-select-panel,
+    .mdc-menu-surface {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .mat-mdc-option,
+    .mat-option {
+        background-color: transparent !important;
+        color: #1e293b !important;
+
+        .mdc-list-item__primary-text,
+        .mat-option-text {
+            color: #1e293b !important;
+        }
+
+        &:hover,
+        &.mat-mdc-option-active,
+        &.mat-active {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            .mdc-list-item__primary-text,
+            .mat-option-text {
+                color: #0f172a !important;
+            }
+        }
+    }
+}
+
+// Tooltips universais (nunca escurecem a tela e não interferem com cliques)
+.mat-mdc-tooltip,
+.mdc-tooltip__surface,
+.mat-tooltip {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    max-width: 320px !important;
+    pointer-events: none !important;
 }
 
 // Borderd Card Theme
