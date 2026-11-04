@@ -40,11 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-# Scripts e arquivos locais (não subir para Git/AWS)
-*.bat
-*.cmd
-*.ps1
-*.sql
-.tools/
-
