@@ -143,7 +143,7 @@ export class DreComponent {
     })
       .then((res) => {
         if (res.status === 200 && res.data) {
-          this.dre = res.data as DreResponse;
+          this.dre = this.ajustarFaturamentoMesesFuturos(res.data as DreResponse);
           this.initExpandedPai();
         } else {
           this.erro = 'Não foi possível carregar o DRE.';
@@ -155,6 +155,108 @@ export class DreComponent {
       .finally(() => {
         this.carregando = false;
       });
+  }
+
+  /**
+   * Garante que faturamentos de trabalhos realizados no período atual que foram indevidamente
+   * atribuídos a faturas de competências futuras (ex: Dezembro antes de chegarmos em Dezembro)
+   * sejam realocados para o mês corrente real e zerados nos meses futuros.
+   */
+  private ajustarFaturamentoMesesFuturos(dre: DreResponse): DreResponse {
+    if (!dre || !dre.meses?.length) return dre;
+
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = hoje.getMonth() + 1; // 1 a 12
+    const mesAtualKey = `${mesAtual}/${anoAtual}`;
+
+    let faturamentoFuturoTransferido = 0;
+
+    for (const mesAno of dre.meses) {
+      const [mStr, aStr] = mesAno.split('/');
+      const m = parseInt(mStr, 10);
+      const a = parseInt(aStr, 10);
+      const isFuturo = a > anoAtual || (a === anoAtual && m > mesAtual);
+
+      if (isFuturo) {
+        const valReceita = dre.totaisReceitaFaturasPorMes?.[mesAno] ?? dre.totaisReceitaPorMes?.[mesAno] ?? 0;
+        if (valReceita > 0) {
+          faturamentoFuturoTransferido += valReceita;
+          if (dre.totaisReceitaFaturasPorMes) dre.totaisReceitaFaturasPorMes[mesAno] = 0;
+          if (dre.totaisReceitaPorMes) dre.totaisReceitaPorMes[mesAno] = 0;
+          if (dre.totaisReceitaOperacionalPorMes) dre.totaisReceitaOperacionalPorMes[mesAno] = 0;
+          if (dre.linhaReceitaFaturas?.valoresPorMes) dre.linhaReceitaFaturas.valoresPorMes[mesAno] = 0;
+        }
+      }
+    }
+
+    if (faturamentoFuturoTransferido > 0) {
+      if (dre.meses.includes(mesAtualKey)) {
+        if (dre.totaisReceitaFaturasPorMes) {
+          dre.totaisReceitaFaturasPorMes[mesAtualKey] = (dre.totaisReceitaFaturasPorMes[mesAtualKey] || 0) + faturamentoFuturoTransferido;
+        }
+        if (dre.totaisReceitaPorMes) {
+          dre.totaisReceitaPorMes[mesAtualKey] = (dre.totaisReceitaPorMes[mesAtualKey] || 0) + faturamentoFuturoTransferido;
+        }
+        if (dre.totaisReceitaOperacionalPorMes) {
+          dre.totaisReceitaOperacionalPorMes[mesAtualKey] = (dre.totaisReceitaOperacionalPorMes[mesAtualKey] || 0) + faturamentoFuturoTransferido;
+        }
+        if (dre.linhaReceitaFaturas?.valoresPorMes) {
+          dre.linhaReceitaFaturas.valoresPorMes[mesAtualKey] = (dre.linhaReceitaFaturas.valoresPorMes[mesAtualKey] || 0) + faturamentoFuturoTransferido;
+        }
+      }
+
+      if (dre.linhaReceitaFaturas?.valoresPorMes) {
+        dre.linhaReceitaFaturas.totalGeral = dre.meses.reduce((acc, m) => acc + (dre.linhaReceitaFaturas.valoresPorMes[m] || 0), 0);
+      }
+
+      for (const m of dre.meses) {
+        const [mStr, aStr] = m.split('/');
+        const mesNum = parseInt(mStr, 10);
+        const anoNum = parseInt(aStr, 10);
+        const isFuturo = anoNum > anoAtual || (anoNum === anoAtual && mesNum > mesAtual);
+        const isAtual = m === mesAtualKey;
+
+        if (isFuturo || isAtual) {
+          const rec = dre.totaisReceitaPorMes[m] || 0;
+          const desp = dre.totaisDespesaPorMes[m] || 0;
+          dre.resultadoPorMes[m] = rec - desp;
+
+          const recOp = dre.totaisReceitaOperacionalPorMes[m] || 0;
+          const despVar = dre.totaisDespesaVariavelPorMes[m] || 0;
+          const despOp = dre.totaisDespesaOperacionalPorMes[m] || 0;
+
+          dre.margemContribuicaoPorMes[m] = recOp - despVar;
+          dre.indiceContribuicaoPorMes[m] = recOp > 0 ? (dre.margemContribuicaoPorMes[m] / recOp) * 100 : 0;
+
+          dre.resultadoOperacionalPorMes[m] = recOp - despOp;
+          dre.ebitdaPorMes[m] = recOp > 0 ? (dre.resultadoOperacionalPorMes[m] / recOp) * 100 : 0;
+
+          const depAmort = dre.totaisDepreciacaoAmortizacaoPorMes?.[m] || 0;
+          if (dre.ebitdaAbsolutoPorMes) {
+            dre.ebitdaAbsolutoPorMes[m] = dre.resultadoOperacionalPorMes[m] + depAmort;
+          }
+
+          const invest = dre.totaisInvestimentosPorMes?.[m] || 0;
+          dre.resultadoPosInvestimentoPorMes[m] = dre.resultadoOperacionalPorMes[m] - invest;
+
+          const aportes = dre.totaisAportesPorMes?.[m] || 0;
+          const financ = dre.totaisSaidasFinanciamentoPorMes?.[m] || 0;
+          dre.resultadoLiquidoPorMes[m] = dre.resultadoPosInvestimentoPorMes[m] + aportes - financ;
+
+          if (dre.lucroOperacionalAjustadoPorMes) {
+            const vencidas = dre.totaisParcelasVencidasPorMes?.[m] || 0;
+            dre.lucroOperacionalAjustadoPorMes[m] = dre.resultadoOperacionalPorMes[m] + vencidas;
+            const recAjustada = recOp + vencidas;
+            if (dre.ebitdaAjustadoPorMes) {
+              dre.ebitdaAjustadoPorMes[m] = recAjustada > 0 ? (dre.lucroOperacionalAjustadoPorMes[m] / recAjustada) * 100 : 0;
+            }
+          }
+        }
+      }
+    }
+
+    return dre;
   }
 
   formatarMes(mesAno: string): string {
